@@ -19,6 +19,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -123,6 +124,7 @@ const MOCK_CARDS: CardResult[] = [
     rarity: "Special Illustration Rare",
   },
 ];
+
 
 // ─── LANGUAGE BADGE ──────────────────────────────────────────────────────────
 
@@ -369,6 +371,13 @@ export default function PriceTrackerPage() {
     <div className="min-h-screen bg-[#faf8f4]">
 
       {/* ── HEADER ── */}
+
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5%] py-5 bg-[#faf8f4]/90 backdrop-blur-md border-b border-[#e5e1d8]">
+      <Link href="/" className="font-playfair text-2xl font-black tracking-tight">
+        Carta<span className="text-[#c9a84c]">e</span>
+        </Link>
+        </nav>
+
       <div className="bg-[#0f1f3d] pt-24 pb-14 px-[5%]">
         <div className="max-w-3xl mx-auto text-center mb-8">
           <span className="inline-block bg-[#c9a84c]/15 border border-[#c9a84c]/30 text-[#e8c97a] text-xs font-medium px-4 py-1.5 rounded-full mb-5 tracking-wide uppercase">
@@ -480,19 +489,6 @@ export default function PriceTrackerPage() {
         {status === "idle" && <IdleState />}
       </div>
 
-      {/* ── TAILWIND ANIMATION NOTE ──────────────────────────────────────────
-          Add this to your tailwind.config.ts keyframes + animation blocks:
-
-          keyframes: {
-            "loading-bar": {
-              "0%":   { transform: "translateX(-100%)" },
-              "100%": { transform: "translateX(100%)" },
-            },
-          },
-          animation: {
-            "loading-bar": "loading-bar 1s ease-in-out infinite",
-          },
-      ── ────────────────────────────────────────────────────────────────── */}
     </div>
   );
 }

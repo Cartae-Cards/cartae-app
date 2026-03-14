@@ -135,7 +135,7 @@ export default function HomePage() {
                 Get Early Access →
               </Link>
               <Link
-                href="#price-tracker"
+                href="/Price-tracker"
                 className="inline-flex items-center gap-2 bg-transparent text-[#0f1f3d] font-medium text-base px-8 py-3.5 rounded-lg border-2 border-[#0f1f3d] hover:bg-[#0f1f3d] hover:text-white transition-all"
               >
                 Try Price Tracker

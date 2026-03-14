@@ -8,8 +8,8 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #256896;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -62,3 +62,4 @@ body {
 .animate-loading-bar {
   animation: loading-bar 1s ease-in-out infinite;
 }
+
