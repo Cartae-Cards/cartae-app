@@ -2,10 +2,15 @@
 // Cartae — Homepage / Landing Page
 // Next.js 14 App Router | TypeScript | Tailwind CSS
 // Fonts loaded via next/font in layout.tsx — see note at bottom of this file
-
+'use client'
+import { useState } from 'react'
 import Link from "next/link";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
+
+const [waitlistEmail, setWaitlistEmail] = useState('')
+const [waitlistMessage, setWaitlistMessage] = useState('')
+const [waitlistLoading, setWaitlistLoading] = useState(false)
 
 const stats = [
   { value: "0%", label: "Seller listing fees" },
@@ -412,16 +417,42 @@ export default function HomePage() {
             the platform.
           </p>
 
-          {/* TODO: replace with /api/waitlist when ready */}
+          {/* Waitlist Form */}
           <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
             <input
               type="email"
               placeholder="your@email.com"
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
               className="flex-1 border-[1.5px] border-[#e5e1d8] rounded-lg px-4 py-3 text-sm text-[#0f1f3d] bg-white outline-none focus:border-[#0f1f3d] transition-colors"
             />
-            <button className="bg-[#0f1f3d] text-white font-medium text-sm px-7 py-3 rounded-lg hover:bg-[#1a3260] transition-colors whitespace-nowrap">
-              Notify me →
+            <button
+              onClick={async () => {
+                if (!waitlistEmail) return
+                setWaitlistLoading(true)
+                try {
+                  const res = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: waitlistEmail })
+                  })
+                  const data = await res.json()
+                  setWaitlistMessage(data.message || data.error)
+                  setWaitlistEmail('')
+                } catch {
+                  setWaitlistMessage('Something went wrong, please try again.')
+                } finally {
+                  setWaitlistLoading(false)
+                }
+              }}
+              disabled={waitlistLoading}
+              className="bg-[#0f1f3d] text-white font-medium text-sm px-6 py-3 rounded-lg hover:bg-[#1a3a5c] transition-colors disabled:opacity-50"
+            >
+              {waitlistLoading ? 'Joining...' : 'Notify me →'}
             </button>
+            {waitlistMessage && (
+              <p className="text-sm text-center text-[#0f1f3d] mt-2">{waitlistMessage}</p>
+            )}
           </div>
           <p className="text-xs text-[#6b7280]">
             No spam. Just a single email when we launch. Unsubscribe any time.
