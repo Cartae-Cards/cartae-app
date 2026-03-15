@@ -28,3 +28,11 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ message: 'Successfully joined the waitlist!', data }, { status: 200 })
 }
+
+export async function GET() {
+    return NextResponse.json({
+      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      urlStart: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20)
+    })
+  }
