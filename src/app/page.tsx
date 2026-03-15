@@ -1,8 +1,10 @@
+'use client'
 // src/app/page.tsx
 // Cartae — Homepage / Landing Page
 // Next.js 14 App Router | TypeScript | Tailwind CSS
 // Fonts loaded via next/font in layout.tsx — see note at bottom of this file
 
+import { useState } from 'react'
 import Link from "next/link";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -68,6 +70,10 @@ const steps = [
 // ─── PAGE ────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const [waitlistEmail, setWaitlistEmail] = useState('')
+  const [waitlistMessage, setWaitlistMessage] = useState('')
+  const [waitlistLoading, setWaitlistLoading] = useState(false)
+
   return (
     <div className="bg-[#faf8f4] text-[#0f1f3d] overflow-x-hidden">
 
@@ -98,16 +104,12 @@ export default function HomePage() {
 
       {/* ── HERO ── */}
       <section className="min-h-screen flex items-center pt-32 pb-20 px-[5%] relative overflow-hidden">
-        {/* Subtle gold glow behind card visual */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 right-[25%] -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#c9a84c]/[0.06] blur-3xl" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto w-full">
-
-          {/* Left: Copy */}
           <div className="flex flex-col animate-fade-up">
-            {/* Eyebrow */}
             <span className="inline-flex items-center gap-2 self-start bg-[#c9a84c]/10 border border-[#c9a84c]/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#8a6a1a] uppercase tracking-widest mb-6">
               🇬🇧 UK-First Marketplace — Coming Soon
             </span>
@@ -143,17 +145,11 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right: Card mockup */}
           <div className="relative h-[460px] flex items-center justify-center">
-            {/* Floating card stack */}
             <div className="relative w-[240px] h-[340px] animate-float">
-              {/* Card 3 — back */}
               <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-gradient-to-br from-[#1a3260] to-[#0f1f3d] border border-white/10 shadow-2xl rotate-[-8deg] translate-x-[-30px] translate-y-[10px] z-[1]" />
-              {/* Card 2 — middle */}
               <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-gradient-to-br from-[#2a4a8a] to-[#1a3260] border border-white/10 shadow-2xl rotate-[-3deg] translate-x-[-10px] translate-y-[5px] z-[2]" />
-              {/* Card 1 — front */}
               <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-white border border-[#e5e1d8] shadow-2xl rotate-[2deg] z-[3] p-4 flex flex-col">
-                {/* Card image area */}
                 <div className="w-full h-[170px] rounded-lg bg-gradient-to-br from-[#e8f0fe] to-[#c7d8f8] flex items-center justify-center text-5xl mb-3">
                   ⚡
                 </div>
@@ -164,28 +160,17 @@ export default function HomePage() {
                   Scarlet &amp; Violet 151
                 </p>
                 <div className="flex gap-1.5 flex-wrap mb-3">
-                  <span className="bg-blue-100 text-blue-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">
-                    EN
-                  </span>
-                  <span className="bg-green-100 text-green-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">
-                    NM
-                  </span>
-                  <span className="bg-amber-100 text-amber-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">
-                    PSA 10
-                  </span>
+                  <span className="bg-blue-100 text-blue-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">EN</span>
+                  <span className="bg-green-100 text-green-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">NM</span>
+                  <span className="bg-amber-100 text-amber-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">PSA 10</span>
                 </div>
                 <div className="mt-auto">
-                  <p className="font-playfair font-bold text-xl text-[#0f1f3d]">
-                    £124.99
-                  </p>
-                  <p className="text-[0.65rem] text-[#6b7280]">
-                    + buyer protection included
-                  </p>
+                  <p className="font-playfair font-bold text-xl text-[#0f1f3d]">£124.99</p>
+                  <p className="text-[0.65rem] text-[#6b7280]">+ buyer protection included</p>
                 </div>
               </div>
             </div>
 
-            {/* Floating badges */}
             <div className="absolute top-5 right-0 md:-right-5 bg-white border border-[#e5e1d8] rounded-xl px-3.5 py-2.5 shadow-lg flex items-center gap-2 text-xs font-medium whitespace-nowrap z-10">
               <span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
               AI-filled in 3 seconds
@@ -204,16 +189,10 @@ export default function HomePage() {
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className={`flex-1 min-w-[140px] py-6 px-8 text-center ${
-                i < stats.length - 1 ? "border-r border-white/10" : ""
-              }`}
+              className={`flex-1 min-w-[140px] py-6 px-8 text-center ${i < stats.length - 1 ? "border-r border-white/10" : ""}`}
             >
-              <span className="font-playfair text-3xl font-bold text-[#e8c97a] block mb-1">
-                {stat.value}
-              </span>
-              <span className="text-xs text-white/50 font-light">
-                {stat.label}
-              </span>
+              <span className="font-playfair text-3xl font-bold text-[#e8c97a] block mb-1">{stat.value}</span>
+              <span className="text-xs text-white/50 font-light">{stat.label}</span>
             </div>
           ))}
         </div>
@@ -221,32 +200,18 @@ export default function HomePage() {
 
       {/* ── FEATURES ── */}
       <section id="features" className="py-24 px-[5%] max-w-6xl mx-auto">
-        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">
-          Why Cartae
-        </span>
+        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Why Cartae</span>
         <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
-          Built for UK collectors.
-          <br />
-          Not an afterthought.
+          Built for UK collectors.<br />Not an afterthought.
         </h2>
         <p className="text-[#6b7280] text-base leading-relaxed max-w-xl mb-14">
-          TCGPlayer is built for the US. Cardmarket is built for Europe. Cartae
-          is built for you — GBP, Royal Mail, and the UK Pokémon community
-          first.
+          TCGPlayer is built for the US. Cardmarket is built for Europe. Cartae is built for you — GBP, Royal Mail, and the UK Pokémon community first.
         </p>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
-            <div
-              key={f.title}
-              className="bg-white border border-[#e5e1d8] rounded-2xl p-8 hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
-            >
-              <div className="w-11 h-11 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center text-xl mb-5">
-                {f.icon}
-              </div>
-              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">
-                {f.title}
-              </h3>
+            <div key={f.title} className="bg-white border border-[#e5e1d8] rounded-2xl p-8 hover:-translate-y-1 hover:shadow-xl transition-all duration-200">
+              <div className="w-11 h-11 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center text-xl mb-5">{f.icon}</div>
+              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">{f.title}</h3>
               <p className="text-sm text-[#6b7280] leading-relaxed">{f.desc}</p>
             </div>
           ))}
@@ -254,106 +219,53 @@ export default function HomePage() {
       </section>
 
       {/* ── PRICE TRACKER ── */}
-      <section
-        id="price-tracker"
-        className="bg-[#0f1f3d] py-24 px-[5%] relative overflow-hidden"
-      >
-        {/* Background glow */}
+      <section id="price-tracker" className="bg-[#0f1f3d] py-24 px-[5%] relative overflow-hidden">
         <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-[#c9a84c]/10 blur-3xl pointer-events-none" />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto relative">
-          {/* Copy */}
           <div>
-            <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">
-              Free Tool
-            </span>
+            <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Free Tool</span>
             <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight text-white tracking-tight mb-4">
-              Track GBP card
-              <br />
-              prices. Before
-              <br />
-              you even sign up.
+              Track GBP card<br />prices. Before<br />you even sign up.
             </h2>
             <p className="text-white/55 text-base leading-relaxed mb-6">
-              The Cartae Price Tracker launches before the marketplace. Check
-              live GBP prices, 30-day trends, and PSA grade values for any
-              Pokémon card — completely free, no account needed.
+              The Cartae Price Tracker launches before the marketplace. Check live GBP prices, 30-day trends, and PSA grade values for any Pokémon card — completely free, no account needed.
             </p>
             <span className="inline-block bg-[#c9a84c]/15 border border-[#c9a84c]/30 text-[#e8c97a] text-xs font-medium px-4 py-1.5 rounded-full mb-8">
               Launching first · No login required
             </span>
             <br />
-            <Link
-              href="#early-access"
-              className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors"
-            >
+            <Link href="#early-access" className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors">
               Get notified when it&apos;s live →
             </Link>
           </div>
 
-          {/* Tracker mockup */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            {/* Search bar */}
             <div className="flex gap-2 mb-5">
-              <input
-                type="text"
-                defaultValue="Charizard ex"
-                readOnly
-                className="flex-1 bg-white/8 border border-white/15 rounded-lg px-4 py-2.5 text-white text-sm font-['DM_Sans'] placeholder-white/30 focus:outline-none bg-white/[0.08]"
-              />
-              <button className="bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e8c97a] transition-colors">
-                Search
-              </button>
+              <input type="text" defaultValue="Charizard ex" readOnly className="flex-1 bg-white/[0.08] border border-white/15 rounded-lg px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none" />
+              <button className="bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e8c97a] transition-colors">Search</button>
             </div>
-
-            {/* Language tabs */}
             <div className="flex gap-2 mb-4">
               {["EN", "JP", "KR"].map((lang, i) => (
-                <button
-                  key={lang}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
-                    i === 0
-                      ? "bg-white/10 text-white border-white/20"
-                      : "bg-transparent text-white/50 border-white/10 hover:text-white/70"
-                  }`}
-                >
-                  {lang}
-                </button>
+                <button key={lang} className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${i === 0 ? "bg-white/10 text-white border-white/20" : "bg-transparent text-white/50 border-white/10 hover:text-white/70"}`}>{lang}</button>
               ))}
             </div>
-
-            {/* Result card */}
-            <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
-              <div className="w-12 h-[68px] rounded-lg bg-gradient-to-br from-[#3a5fa0] to-[#1a3260] flex items-center justify-center text-2xl flex-shrink-0">
-                🔥
-              </div>
+            <div className="bg-white/5 border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
+              <div className="w-12 h-[68px] rounded-lg bg-gradient-to-br from-[#3a5fa0] to-[#1a3260] flex items-center justify-center text-2xl flex-shrink-0">🔥</div>
               <div className="flex-1 min-w-0">
-                <p className="font-playfair font-bold text-sm text-white mb-0.5 truncate">
-                  Charizard ex — Special Illustration Rare
-                </p>
-                <p className="text-[0.7rem] text-white/40 mb-3">
-                  Obsidian Flames · SV03 · #234
-                </p>
+                <p className="font-playfair font-bold text-sm text-white mb-0.5 truncate">Charizard ex — Special Illustration Rare</p>
+                <p className="text-[0.7rem] text-white/40 mb-3">Obsidian Flames · SV03 · #234</p>
                 <div className="flex gap-4">
                   <div className="text-center">
-                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">
-                      £89.99
-                    </span>
+                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">£89.99</span>
                     <span className="text-[0.65rem] text-white/35">Raw NM</span>
                   </div>
                   <div className="text-center">
-                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">
-                      £310.00
-                    </span>
+                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">£310.00</span>
                     <span className="text-[0.65rem] text-white/35">PSA 10</span>
                   </div>
                   <div className="text-center">
-                    <span className="font-bold text-base text-green-400 block">
-                      ↑ 12%
-                    </span>
-                    <span className="text-[0.65rem] text-white/35">
-                      30-day trend
-                    </span>
+                    <span className="font-bold text-base text-green-400 block">↑ 12%</span>
+                    <span className="text-[0.65rem] text-white/35">30-day trend</span>
                   </div>
                 </div>
               </div>
@@ -364,32 +276,18 @@ export default function HomePage() {
 
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="py-24 px-[5%] max-w-6xl mx-auto text-center">
-        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">
-          Simple Process
-        </span>
-        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
-          How Cartae works
-        </h2>
+        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Simple Process</span>
+        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">How Cartae works</h2>
         <p className="text-[#6b7280] text-base leading-relaxed max-w-md mx-auto mb-14">
-          Buying and selling should be simple. Here's how a transaction works on
-          Cartae.
+          Buying and selling should be simple. Here's how a transaction works on Cartae.
         </p>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connecting line — desktop only */}
           <div className="hidden md:block absolute top-8 left-[17%] right-[17%] h-px bg-[#e5e1d8]" />
-
           {steps.map((step) => (
             <div key={step.num} className="px-4">
-              <div className="w-16 h-16 rounded-full bg-[#0f1f3d] text-white font-playfair text-2xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">
-                {step.num}
-              </div>
-              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">
-                {step.title}
-              </h3>
-              <p className="text-sm text-[#6b7280] leading-relaxed">
-                {step.desc}
-              </p>
+              <div className="w-16 h-16 rounded-full bg-[#0f1f3d] text-white font-playfair text-2xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">{step.num}</div>
+              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">{step.title}</h3>
+              <p className="text-sm text-[#6b7280] leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -398,114 +296,67 @@ export default function HomePage() {
       {/* ── EARLY ACCESS ── */}
       <section id="early-access" className="py-24 px-[5%] text-center bg-[#faf8f4]">
         <div className="max-w-lg mx-auto">
-          <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">
-            Join the waitlist
-          </span>
+          <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Join the waitlist</span>
           <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
-            Be first when
-            <br />
-            Cartae launches
+            Be first when<br />Cartae launches
           </h2>
           <p className="text-[#6b7280] text-base leading-relaxed mb-8">
-            We&apos;re soft-launching in 6–8 weeks. Sign up to get early
-            access, be notified when the Price Tracker goes live, and help shape
-            the platform.
+            We&apos;re soft-launching in 6–8 weeks. Sign up to get early access, be notified when the Price Tracker goes live, and help shape the platform.
           </p>
 
-          {/* TODO: replace with /api/waitlist when ready */}
           <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
             <input
               type="email"
               placeholder="your@email.com"
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
               className="flex-1 border-[1.5px] border-[#e5e1d8] rounded-lg px-4 py-3 text-sm text-[#0f1f3d] bg-white outline-none focus:border-[#0f1f3d] transition-colors"
             />
-            <button className="bg-[#0f1f3d] text-white font-medium text-sm px-7 py-3 rounded-lg hover:bg-[#1a3260] transition-colors whitespace-nowrap">
-              Notify me →
+            <button
+              onClick={async () => {
+                if (!waitlistEmail) return
+                setWaitlistLoading(true)
+                try {
+                  const res = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: waitlistEmail })
+                  })
+                  const data = await res.json()
+                  setWaitlistMessage(data.message || data.error)
+                  setWaitlistEmail('')
+                } catch {
+                  setWaitlistMessage('Something went wrong, please try again.')
+                } finally {
+                  setWaitlistLoading(false)
+                }
+              }}
+              disabled={waitlistLoading}
+              className="bg-[#0f1f3d] text-white font-medium text-sm px-6 py-3 rounded-lg hover:bg-[#1a3a5c] transition-colors disabled:opacity-50"
+            >
+              {waitlistLoading ? 'Joining...' : 'Notify me →'}
             </button>
           </div>
-          <p className="text-xs text-[#6b7280]">
-            No spam. Just a single email when we launch. Unsubscribe any time.
-          </p>
+          {waitlistMessage && (
+            <p className="text-sm text-center text-[#0f1f3d] mt-2">{waitlistMessage}</p>
+          )}
+          <p className="text-xs text-[#6b7280]">No spam. Just a single email when we launch. Unsubscribe any time.</p>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
       <footer className="bg-[#0f1f3d] px-[5%] py-10 flex flex-wrap justify-between items-center gap-4">
-        <span className="font-playfair text-xl font-black text-white">
-          Carta<span className="text-[#c9a84c]">e</span>
-        </span>
+        <span className="font-playfair text-xl font-black text-white">Carta<span className="text-[#c9a84c]">e</span></span>
         <ul className="flex gap-6 list-none">
           {["About", "Price Tracker", "Contact", "Privacy"].map((item) => (
             <li key={item}>
-              <Link
-                href="#"
-                className="text-xs text-white/40 hover:text-white/70 transition-colors"
-              >
-                {item}
-              </Link>
+              <Link href="#" className="text-xs text-white/40 hover:text-white/70 transition-colors">{item}</Link>
             </li>
           ))}
         </ul>
-        <span className="text-xs text-white/30">
-          © 2026 Cartae · cartae.co.uk · Built in the UK 🇬🇧
-        </span>
+        <span className="text-xs text-white/30">© 2026 Cartae · cartae.co.uk · Built in the UK 🇬🇧</span>
       </footer>
 
     </div>
   );
 }
-
-// ─── FONT SETUP NOTE ─────────────────────────────────────────────────────────
-//
-// This page uses the "font-playfair" Tailwind class.
-// You need to add Playfair Display to your layout.tsx like this:
-//
-//   import { Playfair_Display, DM_Sans } from "next/font/google";
-//
-//   const playfair = Playfair_Display({
-//     subsets: ["latin"],
-//     variable: "--font-playfair",
-//     weight: ["700", "900"],
-//   });
-//
-//   const dmSans = DM_Sans({
-//     subsets: ["latin"],
-//     variable: "--font-dm-sans",
-//   });
-//
-//   export default function RootLayout({ children }) {
-//     return (
-//       <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
-//         <body className="font-dm-sans">{children}</body>
-//       </html>
-//     );
-//   }
-//
-// And add this to your tailwind.config.ts:
-//
-//   theme: {
-//     extend: {
-//       fontFamily: {
-//         playfair: ["var(--font-playfair)", "serif"],
-//         "dm-sans": ["var(--font-dm-sans)", "sans-serif"],
-//       },
-//       animation: {
-//         "fade-up": "fadeUp 0.6s ease both",
-//         float: "floatY 4s ease-in-out infinite",
-//       },
-//       keyframes: {
-//         fadeUp: {
-//           from: { opacity: "0", transform: "translateY(24px)" },
-//           to: { opacity: "1", transform: "translateY(0)" },
-//         },
-//         floatY: {
-//           "0%, 100%": { transform: "translateY(0px)" },
-//           "50%": { transform: "translateY(-8px)" },
-//         },
-//       },
-//     },
-//   },
-//
-// ─────────────────────────────────────────────────────────────────────────────
-
-
