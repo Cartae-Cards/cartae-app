@@ -10,9 +10,10 @@ import { useRouter } from 'next/navigation';
 // ─── DATA ────────────────────────────────────────────────────────────────────
  
 const stats = [
-  { value: "£0", label: "Seller fees. Always." },
-  { value: "48hr", label: "Buyer protection" },
-  { value: "100%", label: "GBP native" },
+  { value: "0%", label: "Seller listing fees" },
+  { value: "£GBP", label: "Native pricing" },
+  { value: "48hr", label: "Buyer protection escrow" },
+  { value: "AI", label: "Powered listing tools" },
 ];
  
 const features = [

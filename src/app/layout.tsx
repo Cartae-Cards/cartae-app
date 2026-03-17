@@ -1,27 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ["700", "900"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-});
 
 export const metadata: Metadata = {
   title: "Cartae — UK Trading Card Marketplace",
@@ -35,11 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${dmSans.variable}`}
-    >
-      <body className={`${geistSans.variable} ${geistMono.variable} font-dm-sans antialiased`}>
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="https://use.typekit.net/qln4coi.css" />
+      </head>
+      <body className="antialiased">
         {children}
       </body>
     </html>

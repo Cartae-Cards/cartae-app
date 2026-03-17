@@ -2,7 +2,7 @@ import Link from 'next/link'
  
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#08172e] text-[#faf8f4]">
+    <div className="min-h-screen bg-[#1b1c22] text-[#faf8f4]">
       <div className="max-w-2xl mx-auto px-6 py-16">
         <Link href="/" className="text-sm text-white/40 hover:text-white/70 transition-colors mb-8 inline-block">
           ← Back to Cartae
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
         </div>
  
         <div className="mt-12 pt-8 border-t border-white/[0.06]">
-          <Link href="/" className="text-[#c9a84c] text-sm hover:text-[#e8c97a] transition-colors">
+          <Link href="/" className="text-[#b65529] text-sm hover:text-[#d4632f] transition-colors">
             ← Back to Cartae
           </Link>
         </div>
