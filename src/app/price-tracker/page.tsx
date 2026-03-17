@@ -21,6 +21,7 @@ interface Card {
   rarity: string
   image: string
   bestPriceGbp: number | null
+  totalSales: number
   gbpPrices: {
     tcgplayer?: GbpPrices
     ebay?: GbpPrices
@@ -291,18 +292,7 @@ function PriceTrackerInner() {
     if (sortBy === 'price-asc') result.sort((a, b) => (a.bestPriceGbp ?? 0) - (b.bestPriceGbp ?? 0))
     else if (sortBy === 'price-desc') result.sort((a, b) => (b.bestPriceGbp ?? 0) - (a.bestPriceGbp ?? 0))
     else if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
-    else if (sortBy === 'most-sales') {
-      const countPrices = (card: Card) => {
-        let n = 0
-        for (const src of ['tcgplayer', 'ebay'] as const) {
-          for (const cond of ['NEAR_MINT', 'LIGHTLY_PLAYED', 'MODERATELY_PLAYED', 'HEAVILY_PLAYED', 'DAMAGED'] as const) {
-            if (card.gbpPrices[src]?.[cond]) n++
-          }
-        }
-        return n
-      }
-      result.sort((a, b) => countPrices(b) - countPrices(a))
-    }
+    else if (sortBy === 'most-sales') result.sort((a, b) => b.totalSales - a.totalSales)
     setFilteredCards(result)
   }, [cards, selectedRarity, selectedVariant, sortBy])
 

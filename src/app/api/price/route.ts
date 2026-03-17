@@ -57,6 +57,12 @@ export async function GET(request: Request) {
         card.prices?.ebay?.NEAR_MINT?.avg ??
         null
  
+      const totalSales =
+        (card.prices?.tcgplayer?.NEAR_MINT?.saleCount ?? 0) +
+        (card.prices?.ebay?.NEAR_MINT?.saleCount ?? 0) +
+        (card.prices?.tcgplayer?.LIGHTLY_PLAYED?.saleCount ?? 0) +
+        (card.prices?.ebay?.LIGHTLY_PLAYED?.saleCount ?? 0)
+
       return {
         id: card.id,
         name: card.name,
@@ -68,6 +74,7 @@ export async function GET(request: Request) {
         image: card.image,
         gbpPrices,
         bestPriceGbp: bestPriceUsd ? parseFloat((bestPriceUsd * usdToGbp).toFixed(2)) : null,
+        totalSales,
         lastUpdated: card.lastUpdated,
       }
     })
