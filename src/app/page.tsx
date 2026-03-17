@@ -123,12 +123,12 @@ export default function HomePage() {
   }
  
   return (
-    <div className="bg-[#08172e] text-[#faf8f4] overflow-x-hidden">
+    <div className="bg-[#1b1c22] text-[#faf8f4] overflow-x-hidden">
  
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5%] py-4 bg-[#08172e]/90 backdrop-blur-md border-b border-white/[0.06]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5%] py-4 bg-[#1b1c22]/90 backdrop-blur-md border-b border-white/[0.06]">
         <span className="font-playfair text-2xl font-black tracking-tight text-[#faf8f4]">
-          Carta<span className="text-[#c9a84c]">e</span>
+          Carta<span className="text-[#b65529]">e</span>
         </span>
         <ul className="hidden md:flex gap-8 list-none">
           {[
@@ -154,7 +154,7 @@ export default function HomePage() {
               value={navSearch}
               onChange={(e) => setNavSearch(e.target.value)}
               placeholder="Search card prices..."
-              className="bg-white/[0.08] border border-white/[0.18] rounded-lg pl-9 pr-4 py-2 text-sm text-[#faf8f4] placeholder-white/35 focus:outline-none focus:border-[#c9a84c]/60 transition-colors w-52"
+              className="bg-white/[0.08] border border-white/[0.18] rounded-lg pl-9 pr-4 py-2 text-sm text-[#faf8f4] placeholder-white/35 focus:outline-none focus:border-[#b65529]/60 transition-colors w-52"
             />
           </div>
         </form>
@@ -162,24 +162,24 @@ export default function HomePage() {
  
       {/* ── HERO ── */}
       <section className="min-h-screen flex items-center pt-32 pb-20 px-[5%] relative overflow-hidden">
-        <div className="absolute top-1/2 right-[20%] -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#c9a84c]/[0.05] blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-[5%] w-[400px] h-[400px] rounded-full bg-[#1a3260]/30 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-[20%] -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#b65529]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-[5%] w-[400px] h-[400px] rounded-full bg-[#2a2b35]/30 blur-3xl pointer-events-none" />
  
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto w-full">
  
           {/* Left */}
           <div className="flex flex-col">
-            <span className="inline-flex items-center gap-2 self-start bg-[#c9a84c]/10 border border-[#c9a84c]/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#c9a84c] uppercase tracking-widest mb-6">
+            <span className="inline-flex items-center gap-2 self-start bg-[#b65529]/10 border border-[#b65529]/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#b65529] uppercase tracking-widest mb-6">
               🇬🇧 UK-First Marketplace · Coming Soon
             </span>
  
             <h1 className="font-playfair text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-5">
               The collector&apos;s<br />
               marketplace,<br />
-              <em className="not-italic text-[#c9a84c]">built for Britain.</em>
+              <em className="not-italic text-[#b65529]">built for Britain.</em>
             </h1>
  
-            <div className="w-12 h-0.5 bg-[#c9a84c] mb-6" />
+            <div className="w-12 h-0.5 bg-[#b65529] mb-6" />
  
             <p className="text-base text-white/55 leading-relaxed mb-8 max-w-lg">
               GBP-native pricing, zero seller fees, AI-powered listings, and 48-hour
@@ -195,18 +195,18 @@ export default function HomePage() {
                   value={waitlistEmail}
                   onChange={(e) => setWaitlistEmail(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleWaitlist()}
-                  className="flex-1 bg-white/[0.07] border border-white/[0.18] rounded-lg px-4 py-3 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors"
+                  className="flex-1 bg-white/[0.07] border border-white/[0.18] rounded-lg px-4 py-3 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#b65529]/60 transition-colors"
                 />
                 <button
                   onClick={handleWaitlist}
                   disabled={waitlistLoading}
-                  className="bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors disabled:opacity-50 whitespace-nowrap"
+                  className="bg-[#b65529] text-[#1b1c22] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-[#d4632f] transition-colors disabled:opacity-50 whitespace-nowrap"
                 >
                   {waitlistLoading ? 'Joining...' : 'Get Early Access'}
                 </button>
               </div>
               {waitlistMessage ? (
-                <p className="text-sm text-[#c9a84c]">{waitlistMessage}</p>
+                <p className="text-sm text-[#b65529]">{waitlistMessage}</p>
               ) : (
                 <div className="flex items-center gap-3 text-xs text-white/30">
                   <span>· 0% seller fees</span>
@@ -225,16 +225,16 @@ export default function HomePage() {
               <div className="absolute w-[220px] h-[308px] rounded-[14px] overflow-hidden shadow-2xl border border-white/10"
                 style={{ transform: 'rotate(-8deg) translate(-30px, 10px)', zIndex: 1 }}>
                 <img src={HERO_CARDS[0].image} alt={HERO_CARDS[0].name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-[#08172e]/50" />
+                <div className="absolute inset-0 bg-[#1b1c22]/50" />
               </div>
               {/* Mid card */}
               <div className="absolute w-[220px] h-[308px] rounded-[14px] overflow-hidden shadow-2xl border border-white/10"
                 style={{ transform: 'rotate(-3deg) translate(-10px, 5px)', zIndex: 2 }}>
                 <img src={HERO_CARDS[1].image} alt={HERO_CARDS[1].name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-[#08172e]/25" />
+                <div className="absolute inset-0 bg-[#1b1c22]/25" />
               </div>
               {/* Front card */}
-              <div className="absolute w-[220px] rounded-[14px] overflow-hidden shadow-2xl border border-white/15 bg-[#0f1f3d]"
+              <div className="absolute w-[220px] rounded-[14px] overflow-hidden shadow-2xl border border-white/15 bg-[#222329]"
                 style={{ transform: 'rotate(2deg)', zIndex: 3 }}>
                 <img src={HERO_CARDS[2].image} alt={HERO_CARDS[2].name} className="w-full h-[200px] object-cover" />
                 <div className="p-3">
@@ -254,12 +254,12 @@ export default function HomePage() {
             </div>
  
             {/* Floating badges */}
-            <div className="absolute top-6 right-0 bg-[#0f1f3d] border border-white/10 rounded-xl px-3 py-2 shadow-xl z-10">
+            <div className="absolute top-6 right-0 bg-[#222329] border border-white/10 rounded-xl px-3 py-2 shadow-xl z-10">
               <p className="text-white/35 text-[0.6rem] uppercase tracking-wider mb-0.5">GBP Price</p>
-              <p className="font-playfair font-bold text-[#c9a84c] text-lg">{HERO_CARDS[2].price}</p>
+              <p className="font-playfair font-bold text-[#b65529] text-lg">{HERO_CARDS[2].price}</p>
             </div>
-            <div className="absolute bottom-16 left-0 bg-[#0f1f3d] border border-white/10 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2 z-10">
-              <span className="w-6 h-6 rounded-full bg-[#c9a84c]/15 flex items-center justify-center text-sm">🛡</span>
+            <div className="absolute bottom-16 left-0 bg-[#222329] border border-white/10 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2 z-10">
+              <span className="w-6 h-6 rounded-full bg-[#b65529]/15 flex items-center justify-center text-sm">🛡</span>
               <div>
                 <p className="text-[#faf8f4] font-medium text-[0.7rem]">48hr Protection</p>
                 <p className="text-white/35 text-[0.6rem]">Buyer escrow active</p>
@@ -270,12 +270,12 @@ export default function HomePage() {
       </section>
  
       {/* ── STATS BAR ── */}
-      <div className="bg-[#0a1628] border-y border-white/[0.06] px-[5%] py-8 flex justify-center">
+      <div className="bg-[#151619] border-y border-white/[0.06] px-[5%] py-8 flex justify-center">
         <div className="flex flex-wrap max-w-2xl w-full">
           {stats.map((stat, i) => (
             <div key={stat.label}
               className={`flex-1 min-w-[120px] py-4 px-6 text-center ${i < stats.length - 1 ? "border-r border-white/[0.06]" : ""}`}>
-              <span className="font-playfair text-3xl font-bold text-[#c9a84c] block mb-1">{stat.value}</span>
+              <span className="font-playfair text-3xl font-bold text-[#b65529] block mb-1">{stat.value}</span>
               <span className="text-xs text-white/35">{stat.label}</span>
             </div>
           ))}
@@ -284,7 +284,7 @@ export default function HomePage() {
  
       {/* ── FEATURES ── */}
       <section id="features" className="py-24 px-[5%] max-w-6xl mx-auto">
-        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Why Cartae</span>
+        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#b65529] block mb-3">Why Cartae</span>
         <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 text-[#faf8f4]">
           Built for UK collectors.<br />Not an afterthought.
         </h2>
@@ -293,8 +293,8 @@ export default function HomePage() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <div key={f.title} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 hover:-translate-y-1 hover:border-[#c9a84c]/30 transition-all duration-200">
-              <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center text-xl mb-5">{f.icon}</div>
+            <div key={f.title} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 hover:-translate-y-1 hover:border-[#b65529]/30 transition-all duration-200">
+              <div className="w-10 h-10 rounded-xl bg-[#b65529]/10 flex items-center justify-center text-xl mb-5">{f.icon}</div>
               <h3 className="font-playfair font-bold text-base text-[#faf8f4] mb-2">{f.title}</h3>
               <p className="text-sm text-white/45 leading-relaxed">{f.desc}</p>
             </div>
@@ -303,22 +303,22 @@ export default function HomePage() {
       </section>
  
       {/* ── PRICE TRACKER ── */}
-      <section id="price-tracker" className="bg-[#0a1628] border-y border-white/[0.06] py-24 px-[5%] relative overflow-hidden">
-        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-[#c9a84c]/[0.06] blur-3xl pointer-events-none" />
+      <section id="price-tracker" className="bg-[#151619] border-y border-white/[0.06] py-24 px-[5%] relative overflow-hidden">
+        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-[#b65529]/[0.06] blur-3xl pointer-events-none" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto relative">
           <div>
-            <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Free Tool</span>
+            <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#b65529] block mb-3">Free Tool</span>
             <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight text-[#faf8f4] tracking-tight mb-4">
               Track GBP card<br />prices. Before<br />you even sign up.
             </h2>
             <p className="text-white/45 text-base leading-relaxed mb-6">
               The Cartae Price Tracker launches before the marketplace. Check live GBP prices across all conditions for any Pokémon card — completely free, no account needed.
             </p>
-            <span className="inline-block bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] text-xs font-medium px-4 py-1.5 rounded-full mb-8">
+            <span className="inline-block bg-[#b65529]/10 border border-[#b65529]/25 text-[#b65529] text-xs font-medium px-4 py-1.5 rounded-full mb-8">
               Launching first · No login required
             </span>
             <br />
-            <Link href="/price-tracker" className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors">
+            <Link href="/price-tracker" className="inline-flex items-center gap-2 bg-[#b65529] text-[#1b1c22] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#d4632f] transition-colors">
               Try the Price Tracker →
             </Link>
           </div>
@@ -329,7 +329,7 @@ export default function HomePage() {
               <input type="text" defaultValue="Charizard" readOnly
                 className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-[#faf8f4] text-sm focus:outline-none cursor-default" />
               <Link href="/price-tracker?q=Charizard"
-                className="bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e8c97a] transition-colors">
+                className="bg-[#b65529] text-[#1b1c22] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#d4632f] transition-colors">
                 Search
               </Link>
             </div>
@@ -341,11 +341,11 @@ export default function HomePage() {
                 <p className="text-[0.7rem] text-white/35 mb-3">Base Set · 004/102</p>
                 <div className="flex gap-4">
                   <div>
-                    <span className="font-playfair font-bold text-base text-[#c9a84c] block">£379.03</span>
+                    <span className="font-playfair font-bold text-base text-[#b65529] block">£379.03</span>
                     <span className="text-[0.65rem] text-white/35">NM · TCGPlayer</span>
                   </div>
                   <div>
-                    <span className="font-playfair font-bold text-base text-[#c9a84c] block">£547.59</span>
+                    <span className="font-playfair font-bold text-base text-[#b65529] block">£547.59</span>
                     <span className="text-[0.65rem] text-white/35">NM · eBay sold</span>
                   </div>
                   <div>
@@ -362,7 +362,7 @@ export default function HomePage() {
  
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="py-24 px-[5%] max-w-6xl mx-auto text-center">
-        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Simple Process</span>
+        <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#b65529] block mb-3">Simple Process</span>
         <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 text-[#faf8f4]">How Cartae works</h2>
         <p className="text-white/45 text-base leading-relaxed max-w-md mx-auto mb-14">
           Buying and selling should be simple. Here&apos;s how a transaction works on Cartae.
@@ -371,7 +371,7 @@ export default function HomePage() {
           <div className="hidden md:block absolute top-7 left-[17%] right-[17%] h-px bg-white/[0.08]" />
           {steps.map((step) => (
             <div key={step.num} className="px-4">
-              <div className="w-14 h-14 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] font-playfair text-xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">
+              <div className="w-14 h-14 rounded-full bg-[#b65529]/10 border border-[#b65529]/30 text-[#b65529] font-playfair text-xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">
                 {step.num}
               </div>
               <h3 className="font-playfair font-bold text-base text-[#faf8f4] mb-2">{step.title}</h3>
@@ -382,20 +382,20 @@ export default function HomePage() {
       </section>
  
       {/* ── SCROLL CTA ── */}
-      <div className="py-16 px-[5%] text-center bg-[#0a1628] border-t border-white/[0.06]">
+      <div className="py-16 px-[5%] text-center bg-[#151619] border-t border-white/[0.06]">
         <p className="text-white/40 text-sm mb-4">Want to be first when we launch?</p>
         <button
           onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-          className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors"
+          className="inline-flex items-center gap-2 bg-[#b65529] text-[#1b1c22] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#d4632f] transition-colors"
         >
           Get Early Access ↑
         </button>
       </div>
  
       {/* ── FOOTER ── */}
-      <footer className="bg-[#060f1e] px-[5%] py-10 flex flex-wrap justify-between items-center gap-4 border-t border-white/[0.06]">
+      <footer className="bg-[#101115] px-[5%] py-10 flex flex-wrap justify-between items-center gap-4 border-t border-white/[0.06]">
         <span className="font-playfair text-xl font-black text-[#faf8f4]">
-          Carta<span className="text-[#c9a84c]">e</span>
+          Carta<span className="text-[#b65529]">e</span>
         </span>
         <ul className="flex gap-6 list-none">
           <li><button onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="text-xs text-white/35 hover:text-white/70 transition-colors">Join Waitlist</button></li>

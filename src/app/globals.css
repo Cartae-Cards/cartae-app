@@ -8,8 +8,8 @@
 }
 
 :root {
-  --background: #256896;
-  --foreground: #000000;
+  --background: #1b1c22;
+  --foreground: #b65529;
 }
 
 @theme inline {
@@ -42,6 +42,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+select option {
+  background-color: #222329;
+  color: #faf8f4;
 }
 
 @keyframes fadeUp {

@@ -154,6 +154,19 @@ const SETS = [
   { slug: 'sv-prismatic-evolutions', name: 'Prismatic Evolutions' },
 ]
 
+const ALL_RARITIES = [
+  'Common', 'Uncommon', 'Rare', 'Holo Rare',
+  'Double Rare', 'Ultra Rare', 'Illustration Rare', 'Special Illustration Rare',
+  'Hyper Rare', 'ACE SPEC Rare', 'Secret Rare', 'Amazing Rare', 'Radiant Rare',
+  'BREAK Rare', 'Promo', 'Shiny Rare', 'Shiny Ultra Rare', 'Rainbow Rare',
+  'Trainer Gallery Rare',
+]
+
+const ALL_VARIANTS = [
+  'Normal', 'Holofoil', 'Reverse Holofoil', 'Unlimited',
+  'First Edition', 'Shadowless', 'Fourth Print', 'Non Holofoil',
+]
+
 const RECENT_SEARCHES_KEY = 'cartae_recent_searches'
 const MAX_RECENT = 6
 
@@ -180,7 +193,7 @@ function CardResult({ card }: { card: Card }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl overflow-hidden hover:border-[#c9a84c]/30 transition-all duration-200">
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl overflow-hidden hover:border-[#b65529]/30 transition-all duration-200">
       <div className="flex gap-4 p-4">
         <div className="flex-shrink-0">
           <img src={card.image} alt={card.name} width={80} height={112} className="rounded-lg object-cover border border-white/10" />
@@ -193,7 +206,7 @@ function CardResult({ card }: { card: Card }) {
               <p className="text-xs text-white/30 mt-0.5">{card.variant.replace(/_/g, ' ')} · {card.rarity}</p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="font-playfair text-2xl font-bold text-[#c9a84c]">{formatGbp(card.bestPriceGbp)}</p>
+              <p className="font-playfair text-2xl font-bold text-[#b65529]">{formatGbp(card.bestPriceGbp)}</p>
               <p className="text-xs text-white/30">NM · TCGPlayer</p>
             </div>
           </div>
@@ -208,7 +221,7 @@ function CardResult({ card }: { card: Card }) {
               )
             })}
           </div>
-          <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors">
+          <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs text-[#b65529]/70 hover:text-[#b65529] transition-colors">
             {expanded ? '▲ Hide eBay prices' : '▼ Show eBay prices'}
           </button>
         </div>
@@ -278,6 +291,18 @@ function PriceTrackerInner() {
     if (sortBy === 'price-asc') result.sort((a, b) => (a.bestPriceGbp ?? 0) - (b.bestPriceGbp ?? 0))
     else if (sortBy === 'price-desc') result.sort((a, b) => (b.bestPriceGbp ?? 0) - (a.bestPriceGbp ?? 0))
     else if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
+    else if (sortBy === 'most-sales') {
+      const countPrices = (card: Card) => {
+        let n = 0
+        for (const src of ['tcgplayer', 'ebay'] as const) {
+          for (const cond of ['NEAR_MINT', 'LIGHTLY_PLAYED', 'MODERATELY_PLAYED', 'HEAVILY_PLAYED', 'DAMAGED'] as const) {
+            if (card.gbpPrices[src]?.[cond]) n++
+          }
+        }
+        return n
+      }
+      result.sort((a, b) => countPrices(b) - countPrices(a))
+    }
     setFilteredCards(result)
   }, [cards, selectedRarity, selectedVariant, sortBy])
 
@@ -296,8 +321,10 @@ function PriceTrackerInner() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  const rarities = ['All', ...Array.from(new Set(cards.map(c => c.rarity))).sort()]
-  const variants = ['All', ...Array.from(new Set(cards.map(c => c.variant.replace(/_/g, ' ')))).sort()]
+  const dynamicRarities = Array.from(new Set(cards.map(c => c.rarity)))
+  const rarities = ['All', ...Array.from(new Set([...ALL_RARITIES, ...dynamicRarities]))]
+  const dynamicVariants = Array.from(new Set(cards.map(c => c.variant.replace(/_/g, ' '))))
+  const variants = ['All', ...Array.from(new Set([...ALL_VARIANTS, ...dynamicVariants]))]
   const suggestions = query.trim()
     ? recentSearches.filter(s => s.toLowerCase().includes(query.toLowerCase()))
     : recentSearches
@@ -368,14 +395,14 @@ function PriceTrackerInner() {
   const selectedSetName = SETS.find(s => s.slug === selectedSet)?.name
 
   return (
-    <div className="min-h-screen bg-[#08172e] text-[#faf8f4]">
+    <div className="min-h-screen bg-[#1b1c22] text-[#faf8f4]">
       {/* Header */}
-      <div className="bg-[#0a1628] border-b border-white/[0.06]">
+      <div className="bg-[#151619] border-b border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 py-6">
           <a href="/" className="text-sm text-white/35 hover:text-white/70 transition-colors mb-4 inline-block">← Back to Cartae</a>
           <div className="flex items-baseline gap-3 mb-1">
             <span className="font-playfair text-2xl font-black tracking-tight text-[#faf8f4]">
-              Carta<span className="text-[#c9a84c]">e</span>
+              Carta<span className="text-[#b65529]">e</span>
             </span>
             <span className="text-white/20 text-sm">/</span>
             <h1 className="font-playfair text-2xl font-bold text-[#faf8f4]">Price Tracker</h1>
@@ -395,11 +422,11 @@ function PriceTrackerInner() {
                   onChange={(e) => setQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Card name e.g. Charizard, Pikachu... (optional)"
-                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors"
+                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#b65529]/60 transition-colors"
                 />
                 {/* Recent searches dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-[#0f1f3d] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden">
+                  <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-[#222329] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden">
                     <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
                       <span className="text-xs font-semibold text-white/35 uppercase tracking-wide">Recent searches</span>
                       <button type="button" onClick={clearRecentSearches} className="text-xs text-white/35 hover:text-white/60 transition-colors">Clear all</button>
@@ -427,7 +454,7 @@ function PriceTrackerInner() {
                   onChange={(e) => { setSetSearch(e.target.value); setShowSetDropdown(true) }}
                   onFocus={() => setShowSetDropdown(true)}
                   placeholder="Filter by set e.g. Base Set, Obsidian Flames... (optional)"
-                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors pr-8"
+                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#b65529]/60 transition-colors pr-8"
                 />
                 {selectedSet && (
                   <button type="button" onClick={clearSet}
@@ -437,19 +464,19 @@ function PriceTrackerInner() {
                 )}
                 {/* Set dropdown */}
                 {showSetDropdown && filteredSets.length > 0 && (
-                  <div ref={setDropdownRef} className="absolute top-full left-0 right-0 mt-1 bg-[#0f1f3d] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+                  <div ref={setDropdownRef} className="absolute top-full left-0 right-0 mt-1 bg-[#222329] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto">
                     {filteredSets.map((set) => (
                       <button key={set.slug} type="button" onClick={() => handleSetSelect(set.slug, set.name)}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/[0.04] flex items-center justify-between border-b border-white/[0.04] last:border-0 transition-colors ${selectedSet === set.slug ? 'text-[#c9a84c] bg-[#c9a84c]/[0.06]' : 'text-white/70'}`}>
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/[0.04] flex items-center justify-between border-b border-white/[0.04] last:border-0 transition-colors ${selectedSet === set.slug ? 'text-[#b65529] bg-[#b65529]/[0.06]' : 'text-white/70'}`}>
                         {set.name}
-                        {selectedSet === set.slug && <span className="text-[#c9a84c] text-xs">✓</span>}
+                        {selectedSet === set.slug && <span className="text-[#b65529] text-xs">✓</span>}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
               <button type="submit" disabled={loading || (!query.trim() && !selectedSet)}
-                className="bg-[#c9a84c] text-[#08172e] font-semibold px-5 py-2.5 rounded-lg text-sm hover:bg-[#e8c97a] disabled:opacity-40 whitespace-nowrap transition-colors">
+                className="bg-[#b65529] text-[#1b1c22] font-semibold px-5 py-2.5 rounded-lg text-sm hover:bg-[#d4632f] disabled:opacity-40 whitespace-nowrap transition-colors">
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
@@ -458,7 +485,7 @@ function PriceTrackerInner() {
             {(query || selectedSetName) && (
               <div className="flex items-center gap-2 flex-wrap pt-1">
                 {query && (
-                  <span className="bg-[#c9a84c]/10 text-[#c9a84c] text-xs px-2.5 py-1 rounded-full border border-[#c9a84c]/25">
+                  <span className="bg-[#b65529]/10 text-[#b65529] text-xs px-2.5 py-1 rounded-full border border-[#b65529]/25">
                     Name: {query}
                   </span>
                 )}
@@ -477,30 +504,31 @@ function PriceTrackerInner() {
               <div className="flex items-center gap-1.5">
                 <label className="text-xs text-white/35 font-medium">Rarity</label>
                 <select value={selectedRarity} onChange={(e) => setSelectedRarity(e.target.value)}
-                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-[#222329] text-[#faf8f4] focus:outline-none focus:border-[#b65529]/60 transition-colors">
                   {rarities.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               <div className="flex items-center gap-1.5">
                 <label className="text-xs text-white/35 font-medium">Variant</label>
                 <select value={selectedVariant} onChange={(e) => setSelectedVariant(e.target.value)}
-                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-[#222329] text-[#faf8f4] focus:outline-none focus:border-[#b65529]/60 transition-colors">
                   {variants.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </div>
               <div className="flex items-center gap-1.5">
                 <label className="text-xs text-white/35 font-medium">Sort</label>
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-[#222329] text-[#faf8f4] focus:outline-none focus:border-[#b65529]/60 transition-colors">
                   <option value="default">Default</option>
-                  <option value="price-asc">Price: Low → High</option>
-                  <option value="price-desc">Price: High → Low</option>
                   <option value="name-asc">Name A → Z</option>
+                  <option value="price-desc">Price: High → Low</option>
+                  <option value="price-asc">Price: Low → High</option>
+                  <option value="most-sales">Most Sales</option>
                 </select>
               </div>
               {(selectedRarity !== 'All' || selectedVariant !== 'All' || sortBy !== 'default') && (
                 <button onClick={() => { setSelectedRarity('All'); setSelectedVariant('All'); setSortBy('default') }}
-                  className="text-xs text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors">
+                  className="text-xs text-[#b65529]/70 hover:text-[#b65529] transition-colors">
                   Reset filters
                 </button>
               )}
@@ -565,7 +593,7 @@ function PriceTrackerInner() {
                 <div className="flex flex-wrap gap-2 justify-center">
                   {recentSearches.map((s, i) => (
                     <button key={i} onClick={() => handleSuggestionClick(s)}
-                      className="bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-1.5 text-sm text-white/50 hover:border-[#c9a84c]/40 hover:text-[#c9a84c] transition-colors">
+                      className="bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-1.5 text-sm text-white/50 hover:border-[#b65529]/40 hover:text-[#b65529] transition-colors">
                       {s}
                     </button>
                   ))}
@@ -582,7 +610,7 @@ function PriceTrackerInner() {
 export default function PriceTrackerPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#08172e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#1b1c22] flex items-center justify-center">
         <p className="text-white/35 text-sm">Loading...</p>
       </div>
     }>
