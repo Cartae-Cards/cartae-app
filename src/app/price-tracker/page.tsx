@@ -157,7 +157,7 @@ const SETS = [
 const RECENT_SEARCHES_KEY = 'cartae_recent_searches'
 const MAX_RECENT = 6
  
-function formatGbp(value: number | null) {
+function formatGbp(value: number | null | undefined) { {
   if (!value) return '—'
   return `£${value.toFixed(2)}`
 }
