@@ -1,8 +1,8 @@
 'use client'
- 
+
 import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
- 
+
 interface GbpPrices {
   NEAR_MINT: number | null
   LIGHTLY_PLAYED: number | null
@@ -10,7 +10,7 @@ interface GbpPrices {
   HEAVILY_PLAYED: number | null
   DAMAGED: number | null
 }
- 
+
 interface Card {
   id: string
   name: string
@@ -27,7 +27,7 @@ interface Card {
   }
   lastUpdated: string
 }
- 
+
 const CONDITIONS = [
   { key: 'NEAR_MINT', label: 'NM' },
   { key: 'LIGHTLY_PLAYED', label: 'LP' },
@@ -35,7 +35,7 @@ const CONDITIONS = [
   { key: 'HEAVILY_PLAYED', label: 'HP' },
   { key: 'DAMAGED', label: 'DMG' },
 ]
- 
+
 const SETS = [
   { slug: 'base-set', name: 'Base Set' },
   { slug: 'base-set-shadowless', name: 'Base Set (Shadowless)' },
@@ -140,28 +140,28 @@ const SETS = [
   { slug: 'lost-origin', name: 'Lost Origin' },
   { slug: 'silver-tempest', name: 'Silver Tempest' },
   { slug: 'crown-zenith', name: 'Crown Zenith' },
-  { slug: 'scarlet-violet', name: 'Scarlet & Violet' },
-  { slug: 'paldea-evolved', name: 'Paldea Evolved' },
-  { slug: 'obsidian-flames', name: 'Obsidian Flames' },
-  { slug: 'pokemon-151', name: 'Pokémon 151' },
-  { slug: 'paradox-rift', name: 'Paradox Rift' },
-  { slug: 'paldean-fates', name: 'Paldean Fates' },
-  { slug: 'temporal-forces', name: 'Temporal Forces' },
-  { slug: 'twilight-masquerade', name: 'Twilight Masquerade' },
-  { slug: 'shrouded-fable', name: 'Shrouded Fable' },
-  { slug: 'stellar-crown', name: 'Stellar Crown' },
-  { slug: 'surging-sparks', name: 'Surging Sparks' },
-  { slug: 'prismatic-evolutions', name: 'Prismatic Evolutions' },
+  { slug: 'sv-scarlet', name: 'Scarlet & Violet' },
+  { slug: 'sv-paldean', name: 'Paldea Evolved' },
+  { slug: 'sv-obsidian', name: 'Obsidian Flames' },
+  { slug: 'sv-scarlet-and-violet-151', name: 'Pokémon 151' },
+  { slug: 'sv-paradox', name: 'Paradox Rift' },
+  { slug: 'sv-paldean-fates', name: 'Paldean Fates' },
+  { slug: 'sv-temporal', name: 'Temporal Forces' },
+  { slug: 'sv-twilight', name: 'Twilight Masquerade' },
+  { slug: 'sv-shrouded', name: 'Shrouded Fable' },
+  { slug: 'sv-stellar', name: 'Stellar Crown' },
+  { slug: 'sv-surging', name: 'Surging Sparks' },
+  { slug: 'sv-prismatic', name: 'Prismatic Evolutions' },
 ]
- 
+
 const RECENT_SEARCHES_KEY = 'cartae_recent_searches'
 const MAX_RECENT = 6
- 
+
 function formatGbp(value: number | null | undefined) {
   if (!value) return '—'
   return `£${value.toFixed(2)}`
 }
- 
+
 function saveRecentSearch(label: string) {
   try {
     const existing: string[] = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]')
@@ -169,32 +169,32 @@ function saveRecentSearch(label: string) {
     localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
   } catch {}
 }
- 
+
 function getRecentSearches(): string[] {
   try {
     return JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY) || '[]')
   } catch { return [] }
 }
- 
+
 function CardResult({ card }: { card: Card }) {
   const [expanded, setExpanded] = useState(false)
- 
+
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl overflow-hidden hover:border-[#c9a84c]/30 transition-all duration-200">
       <div className="flex gap-4 p-4">
         <div className="flex-shrink-0">
-          <img src={card.image} alt={card.name} width={80} height={112} className="rounded-lg object-cover" />
+          <img src={card.image} alt={card.name} width={80} height={112} className="rounded-lg object-cover border border-white/10" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h3 className="font-bold text-gray-900">{card.name}</h3>
-              <p className="text-sm text-gray-500">{card.set} · {card.cardNumber}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{card.variant.replace(/_/g, ' ')} · {card.rarity}</p>
+              <h3 className="font-playfair font-bold text-[#faf8f4]">{card.name}</h3>
+              <p className="text-sm text-white/45">{card.set} · {card.cardNumber}</p>
+              <p className="text-xs text-white/30 mt-0.5">{card.variant.replace(/_/g, ' ')} · {card.rarity}</p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-2xl font-bold text-green-600">{formatGbp(card.bestPriceGbp)}</p>
-              <p className="text-xs text-gray-400">NM · TCGPlayer</p>
+              <p className="font-playfair text-2xl font-bold text-[#c9a84c]">{formatGbp(card.bestPriceGbp)}</p>
+              <p className="text-xs text-white/30">NM · TCGPlayer</p>
             </div>
           </div>
           <div className="flex gap-3 mt-3 flex-wrap">
@@ -202,27 +202,27 @@ function CardResult({ card }: { card: Card }) {
               const price = card.gbpPrices?.tcgplayer?.[key as keyof GbpPrices]
               return (
                 <div key={key} className="text-center">
-                  <p className="text-xs text-gray-400">{label}</p>
-                  <p className="text-sm font-medium text-gray-800">{formatGbp(price)}</p>
+                  <p className="text-xs text-white/30">{label}</p>
+                  <p className="text-sm font-medium text-[#faf8f4]">{formatGbp(price)}</p>
                 </div>
               )
             })}
           </div>
-          <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs text-blue-600 hover:text-blue-800">
+          <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors">
             {expanded ? '▲ Hide eBay prices' : '▼ Show eBay prices'}
           </button>
         </div>
       </div>
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
-          <p className="text-xs font-semibold text-gray-500 mb-2">eBay sold prices</p>
+        <div className="border-t border-white/[0.06] px-4 py-3 bg-white/[0.02]">
+          <p className="text-xs font-semibold text-white/35 mb-2">eBay sold prices</p>
           <div className="flex gap-4 flex-wrap">
             {CONDITIONS.map(({ key, label }) => {
               const price = card.gbpPrices?.ebay?.[key as keyof GbpPrices]
               return (
                 <div key={key} className="text-center">
-                  <p className="text-xs text-gray-400">{label}</p>
-                  <p className="text-sm font-medium text-gray-700">{formatGbp(price)}</p>
+                  <p className="text-xs text-white/30">{label}</p>
+                  <p className="text-sm font-medium text-white/60">{formatGbp(price)}</p>
                 </div>
               )
             })}
@@ -232,7 +232,7 @@ function CardResult({ card }: { card: Card }) {
     </div>
   )
 }
- 
+
 function PriceTrackerInner() {
   const searchParams = useSearchParams()
   const [query, setQuery] = useState('')
@@ -245,20 +245,20 @@ function PriceTrackerInner() {
   const [error, setError] = useState('')
   const [searched, setSearched] = useState(false)
   const [exchangeRate, setExchangeRate] = useState<number | null>(null)
- 
+
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const setDropdownRef = useRef<HTMLDivElement>(null)
   const setInputRef = useRef<HTMLInputElement>(null)
- 
+
   const [selectedRarity, setSelectedRarity] = useState('All')
   const [selectedVariant, setSelectedVariant] = useState('All')
   const [sortBy, setSortBy] = useState('default')
- 
+
   useEffect(() => { setRecentSearches(getRecentSearches()) }, [])
- 
+
   useEffect(() => {
     const q = searchParams.get('q')
     const s = searchParams.get('set')
@@ -270,7 +270,7 @@ function PriceTrackerInner() {
     }
     if (q || s) runSearch(q || '', s || '')
   }, [searchParams])
- 
+
   useEffect(() => {
     let result = [...cards]
     if (selectedRarity !== 'All') result = result.filter(c => c.rarity === selectedRarity)
@@ -280,7 +280,7 @@ function PriceTrackerInner() {
     else if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name))
     setFilteredCards(result)
   }, [cards, selectedRarity, selectedVariant, sortBy])
- 
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
@@ -295,7 +295,7 @@ function PriceTrackerInner() {
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
- 
+
   const rarities = ['All', ...Array.from(new Set(cards.map(c => c.rarity))).sort()]
   const variants = ['All', ...Array.from(new Set(cards.map(c => c.variant.replace(/_/g, ' ')))).sort()]
   const suggestions = query.trim()
@@ -304,7 +304,7 @@ function PriceTrackerInner() {
   const filteredSets = setSearch.trim()
     ? SETS.filter(s => s.name.toLowerCase().includes(setSearch.toLowerCase()))
     : SETS
- 
+
   async function runSearch(nameQuery: string, setSlug: string) {
     if (!nameQuery.trim() && !setSlug) return
     setLoading(true)
@@ -334,48 +334,55 @@ function PriceTrackerInner() {
       setLoading(false)
     }
   }
- 
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     setShowSuggestions(false)
     setShowSetDropdown(false)
     runSearch(query, selectedSet)
   }
- 
+
   function handleSuggestionClick(suggestion: string) {
     setQuery(suggestion)
     setShowSuggestions(false)
     runSearch(suggestion, selectedSet)
   }
- 
+
   function handleSetSelect(slug: string, name: string) {
     setSelectedSet(slug)
     setSetSearch(name)
     setShowSetDropdown(false)
   }
- 
+
   function clearSet() {
     setSelectedSet('')
     setSetSearch('')
   }
- 
+
   function clearRecentSearches() {
     localStorage.removeItem(RECENT_SEARCHES_KEY)
     setRecentSearches([])
     setShowSuggestions(false)
   }
- 
+
   const selectedSetName = SETS.find(s => s.slug === selectedSet)?.name
- 
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-[#08172e] text-[#faf8f4]">
+      {/* Header */}
+      <div className="bg-[#0a1628] border-b border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 py-6">
-          <a href="/" className="text-sm text-gray-400 hover:text-gray-600 mb-4 inline-block">← Back to Cartae</a>
-          <h1 className="text-2xl font-bold text-gray-900">Price Tracker</h1>
-          <p className="text-gray-500 text-sm mt-1">Real market prices in GBP — converted from TCGPlayer & eBay sold data</p>
- 
-          <form onSubmit={handleSearch} className="mt-4 space-y-2">
+          <a href="/" className="text-sm text-white/35 hover:text-white/70 transition-colors mb-4 inline-block">← Back to Cartae</a>
+          <div className="flex items-baseline gap-3 mb-1">
+            <span className="font-playfair text-2xl font-black tracking-tight text-[#faf8f4]">
+              Carta<span className="text-[#c9a84c]">e</span>
+            </span>
+            <span className="text-white/20 text-sm">/</span>
+            <h1 className="font-playfair text-2xl font-bold text-[#faf8f4]">Price Tracker</h1>
+          </div>
+          <p className="text-white/40 text-sm mt-1">Real market prices in GBP — converted from TCGPlayer &amp; eBay sold data</p>
+
+          <form onSubmit={handleSearch} className="mt-5 space-y-2">
             {/* Name search */}
             <div className="flex gap-2">
               <div className="flex-1 relative">
@@ -388,26 +395,26 @@ function PriceTrackerInner() {
                   onChange={(e) => setQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Card name e.g. Charizard, Pikachu... (optional)"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors"
                 />
                 {/* Recent searches dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Recent searches</span>
-                      <button type="button" onClick={clearRecentSearches} className="text-xs text-gray-400 hover:text-gray-600">Clear all</button>
+                  <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-[#0f1f3d] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
+                      <span className="text-xs font-semibold text-white/35 uppercase tracking-wide">Recent searches</span>
+                      <button type="button" onClick={clearRecentSearches} className="text-xs text-white/35 hover:text-white/60 transition-colors">Clear all</button>
                     </div>
                     {suggestions.map((s, i) => (
                       <button key={i} type="button" onClick={() => handleSuggestionClick(s)}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-50 last:border-0">
-                        <span className="text-gray-300 text-xs">🕐</span>{s}
+                        className="w-full text-left px-4 py-2.5 text-sm text-white/70 hover:bg-white/[0.04] flex items-center gap-2 border-b border-white/[0.04] last:border-0 transition-colors">
+                        <span className="text-white/20 text-xs">🕐</span>{s}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
             </div>
- 
+
             {/* Set picker + Search button */}
             <div className="flex gap-2">
               <div className="flex-1 relative">
@@ -420,71 +427,71 @@ function PriceTrackerInner() {
                   onChange={(e) => { setSetSearch(e.target.value); setShowSetDropdown(true) }}
                   onFocus={() => setShowSetDropdown(true)}
                   placeholder="Filter by set e.g. Base Set, Obsidian Flames... (optional)"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
+                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors pr-8"
                 />
                 {selectedSet && (
                   <button type="button" onClick={clearSet}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/35 hover:text-white/60 transition-colors text-xs">
                     ✕
                   </button>
                 )}
                 {/* Set dropdown */}
                 {showSetDropdown && filteredSets.length > 0 && (
-                  <div ref={setDropdownRef} className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden max-h-60 overflow-y-auto">
+                  <div ref={setDropdownRef} className="absolute top-full left-0 right-0 mt-1 bg-[#0f1f3d] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden max-h-60 overflow-y-auto">
                     {filteredSets.map((set) => (
                       <button key={set.slug} type="button" onClick={() => handleSetSelect(set.slug, set.name)}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center justify-between border-b border-gray-50 last:border-0 ${selectedSet === set.slug ? 'text-blue-600 bg-blue-50' : 'text-gray-700'}`}>
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white/[0.04] flex items-center justify-between border-b border-white/[0.04] last:border-0 transition-colors ${selectedSet === set.slug ? 'text-[#c9a84c] bg-[#c9a84c]/[0.06]' : 'text-white/70'}`}>
                         {set.name}
-                        {selectedSet === set.slug && <span className="text-blue-500 text-xs">✓</span>}
+                        {selectedSet === set.slug && <span className="text-[#c9a84c] text-xs">✓</span>}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
               <button type="submit" disabled={loading || (!query.trim() && !selectedSet)}
-                className="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap">
+                className="bg-[#c9a84c] text-[#08172e] font-semibold px-5 py-2.5 rounded-lg text-sm hover:bg-[#e8c97a] disabled:opacity-40 whitespace-nowrap transition-colors">
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
- 
+
             {/* Active search tags */}
             {(query || selectedSetName) && (
               <div className="flex items-center gap-2 flex-wrap pt-1">
                 {query && (
-                  <span className="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full border border-blue-200">
+                  <span className="bg-[#c9a84c]/10 text-[#c9a84c] text-xs px-2.5 py-1 rounded-full border border-[#c9a84c]/25">
                     Name: {query}
                   </span>
                 )}
                 {selectedSetName && (
-                  <span className="bg-purple-50 text-purple-700 text-xs px-2.5 py-1 rounded-full border border-purple-200">
+                  <span className="bg-white/[0.06] text-white/60 text-xs px-2.5 py-1 rounded-full border border-white/[0.12]">
                     Set: {selectedSetName}
                   </span>
                 )}
               </div>
             )}
           </form>
- 
+
           {/* Filter bar */}
           {searched && cards.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-3 items-center pt-3 border-t border-gray-100">
+            <div className="mt-4 flex flex-wrap gap-3 items-center pt-3 border-t border-white/[0.06]">
               <div className="flex items-center gap-1.5">
-                <label className="text-xs text-gray-400 font-medium">Rarity</label>
+                <label className="text-xs text-white/35 font-medium">Rarity</label>
                 <select value={selectedRarity} onChange={(e) => setSelectedRarity(e.target.value)}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
                   {rarities.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               <div className="flex items-center gap-1.5">
-                <label className="text-xs text-gray-400 font-medium">Variant</label>
+                <label className="text-xs text-white/35 font-medium">Variant</label>
                 <select value={selectedVariant} onChange={(e) => setSelectedVariant(e.target.value)}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
                   {variants.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </div>
               <div className="flex items-center gap-1.5">
-                <label className="text-xs text-gray-400 font-medium">Sort</label>
+                <label className="text-xs text-white/35 font-medium">Sort</label>
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                  className="text-xs border border-gray-200 rounded-md px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  className="text-xs border border-white/[0.12] rounded-md px-2 py-1.5 bg-white/[0.06] text-white/70 focus:outline-none focus:border-[#c9a84c]/60 transition-colors">
                   <option value="default">Default</option>
                   <option value="price-asc">Price: Low → High</option>
                   <option value="price-desc">Price: High → Low</option>
@@ -493,53 +500,53 @@ function PriceTrackerInner() {
               </div>
               {(selectedRarity !== 'All' || selectedVariant !== 'All' || sortBy !== 'default') && (
                 <button onClick={() => { setSelectedRarity('All'); setSelectedVariant('All'); setSortBy('default') }}
-                  className="text-xs text-blue-600 hover:text-blue-800">
+                  className="text-xs text-[#c9a84c]/70 hover:text-[#c9a84c] transition-colors">
                   Reset filters
                 </button>
               )}
-              <span className="text-xs text-gray-400 ml-auto">{filteredCards.length} of {cards.length} results</span>
+              <span className="text-xs text-white/25 ml-auto">{filteredCards.length} of {cards.length} results</span>
             </div>
           )}
         </div>
       </div>
- 
+
       {/* Results */}
       <div className="max-w-3xl mx-auto px-4 py-6">
         {exchangeRate && (
-          <p className="text-xs text-gray-400 mb-4">
+          <p className="text-xs text-white/25 mb-4">
             Reference price — converted from US/EU market data · Rate: 1 USD = £{exchangeRate}
           </p>
         )}
-        {error && <div className="bg-red-50 text-red-600 rounded-lg p-4 text-sm">{error}</div>}
- 
+        {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg p-4 text-sm">{error}</div>}
+
         {loading && (
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-xl p-4 animate-pulse">
+              <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 animate-pulse">
                 <div className="flex gap-4">
-                  <div className="w-20 h-28 bg-gray-200 rounded-lg" />
+                  <div className="w-20 h-28 bg-white/[0.06] rounded-lg" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/3" />
-                    <div className="h-3 bg-gray-100 rounded w-1/2" />
-                    <div className="h-6 bg-gray-200 rounded w-1/4 mt-4" />
+                    <div className="h-4 bg-white/[0.06] rounded w-1/3" />
+                    <div className="h-3 bg-white/[0.04] rounded w-1/2" />
+                    <div className="h-6 bg-white/[0.06] rounded w-1/4 mt-4" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         )}
- 
+
         {!loading && searched && filteredCards.length === 0 && !error && (
-          <p className="text-center text-gray-500 py-12">
+          <p className="text-center text-white/35 py-12">
             {cards.length > 0
               ? 'No cards match your current filters. Try resetting.'
               : 'No cards found. Try a different name or set.'}
           </p>
         )}
- 
+
         {!loading && filteredCards.length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white/40">
               {filteredCards.length} result{filteredCards.length !== 1 ? 's' : ''}
               {query && ` for "${query}"`}
               {selectedSetName && ` in ${selectedSetName}`}
@@ -547,18 +554,18 @@ function PriceTrackerInner() {
             {filteredCards.map(card => <CardResult key={card.id} card={card} />)}
           </div>
         )}
- 
+
         {!searched && (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-white/30">
             <p className="text-4xl mb-3">🔍</p>
             <p className="text-sm">Search by card name, set, or both</p>
             {recentSearches.length > 0 && (
               <div className="mt-8">
-                <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-medium">Recent searches</p>
+                <p className="text-xs text-white/25 mb-3 uppercase tracking-wide font-medium">Recent searches</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {recentSearches.map((s, i) => (
                     <button key={i} onClick={() => handleSuggestionClick(s)}
-                      className="bg-white border border-gray-200 rounded-full px-4 py-1.5 text-sm text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                      className="bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-1.5 text-sm text-white/50 hover:border-[#c9a84c]/40 hover:text-[#c9a84c] transition-colors">
                       {s}
                     </button>
                   ))}
@@ -571,12 +578,12 @@ function PriceTrackerInner() {
     </div>
   )
 }
- 
+
 export default function PriceTrackerPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Loading...</p>
+      <div className="min-h-screen bg-[#08172e] flex items-center justify-center">
+        <p className="text-white/35 text-sm">Loading...</p>
       </div>
     }>
       <PriceTrackerInner />

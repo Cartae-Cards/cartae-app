@@ -12,7 +12,7 @@ export async function GET(request: Request) {
  
   try {
     // Build PokeTrace URL with optional name + set params
-    const params = new URLSearchParams({ limit: '20' })
+    const params = new URLSearchParams({ limit: '10' })
     if (query) params.set('search', query)
     if (set) params.set('set', set)
  
@@ -36,6 +36,8 @@ export async function GET(request: Request) {
     const cardsData = await cardsResponse.json()
     const fxData = await fxResponse.json()
     const usdToGbp = fxData.conversion_rate
+
+
  
     const cards = cardsData.data.map((card: any) => {
       const gbpPrices: Record<string, Record<string, number | null>> = {}
