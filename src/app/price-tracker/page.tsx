@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Badge from '@/app/components/ui/badge'
 
 interface GbpPrices {
   NEAR_MINT: number | null
@@ -216,7 +217,7 @@ function CardResult({ card }: { card: Card }) {
               const price = card.gbpPrices?.tcgplayer?.[key as keyof GbpPrices]
               return (
                 <div key={key} className="text-center">
-                  <p className="text-xs text-white/30">{label}</p>
+                  <Badge variant="condition" className="mb-1">{label}</Badge>
                   <p className="text-sm font-medium text-[#faf8f4]">{formatGbp(price)}</p>
                 </div>
               )
@@ -235,7 +236,7 @@ function CardResult({ card }: { card: Card }) {
               const price = card.gbpPrices?.ebay?.[key as keyof GbpPrices]
               return (
                 <div key={key} className="text-center">
-                  <p className="text-xs text-white/30">{label}</p>
+                  <Badge variant="condition" className="mb-1">{label}</Badge>
                   <p className="text-sm font-medium text-white/60">{formatGbp(price)}</p>
                 </div>
               )
