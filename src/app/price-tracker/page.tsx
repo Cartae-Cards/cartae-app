@@ -372,6 +372,10 @@ function PriceTrackerInner() {
     setShowSetDropdown(false)
   }
 
+  function clearQuery() {
+    setQuery('')
+  }
+
   function clearSet() {
     setSelectedSet('')
     setSetSearch('')
@@ -413,8 +417,14 @@ function PriceTrackerInner() {
                   onChange={(e) => setQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="Card name e.g. Charizard, Pikachu... (optional)"
-                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#b65529]/60 transition-colors"
+                  className="w-full bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#b65529]/60 transition-colors pr-8"
                 />
+                {query && (
+                  <button type="button" onClick={clearQuery}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/35 hover:text-white/60 transition-colors text-xs">
+                    ✕
+                  </button>
+                )}
                 {/* Recent searches dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div ref={suggestionsRef} className="absolute top-full left-0 right-0 mt-1 bg-[#222329] border border-white/[0.12] rounded-lg shadow-2xl z-50 overflow-hidden">
@@ -476,13 +486,15 @@ function PriceTrackerInner() {
             {(query || selectedSetName) && (
               <div className="flex items-center gap-2 flex-wrap pt-1">
                 {query && (
-                  <span className="bg-[#b65529]/10 text-[#b65529] text-xs px-2.5 py-1 rounded-full border border-[#b65529]/25">
+                  <span className="inline-flex items-center gap-1.5 bg-[#b65529]/10 text-[#b65529] text-xs px-2.5 py-1 rounded-full border border-[#b65529]/25">
                     Name: {query}
+                    <button type="button" onClick={clearQuery} className="hover:text-[#b65529]/60 transition-colors leading-none">✕</button>
                   </span>
                 )}
                 {selectedSetName && (
-                  <span className="bg-white/[0.06] text-white/60 text-xs px-2.5 py-1 rounded-full border border-white/[0.12]">
+                  <span className="inline-flex items-center gap-1.5 bg-white/[0.06] text-white/60 text-xs px-2.5 py-1 rounded-full border border-white/[0.12]">
                     Set: {selectedSetName}
+                    <button type="button" onClick={clearSet} className="hover:text-white/40 transition-colors leading-none">✕</button>
                   </span>
                 )}
               </div>
