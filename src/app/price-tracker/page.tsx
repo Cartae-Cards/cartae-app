@@ -1,8 +1,8 @@
 'use client'
-
-import { useState } from 'react'
-import Image from 'next/image'
-
+ 
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+ 
 interface GbpPrices {
   NEAR_MINT: number | null
   LIGHTLY_PLAYED: number | null
@@ -10,7 +10,7 @@ interface GbpPrices {
   HEAVILY_PLAYED: number | null
   DAMAGED: number | null
 }
-
+ 
 interface Card {
   id: string
   name: string
@@ -26,7 +26,7 @@ interface Card {
   }
   lastUpdated: string
 }
-
+ 
 const CONDITIONS = [
   { key: 'NEAR_MINT', label: 'NM' },
   { key: 'LIGHTLY_PLAYED', label: 'LP' },
@@ -34,19 +34,18 @@ const CONDITIONS = [
   { key: 'HEAVILY_PLAYED', label: 'HP' },
   { key: 'DAMAGED', label: 'DMG' },
 ]
-
+ 
 function formatGbp(value: number | null) {
   if (!value) return '—'
   return `£${value.toFixed(2)}`
 }
-
+ 
 function CardResult({ card }: { card: Card }) {
   const [expanded, setExpanded] = useState(false)
-
+ 
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="flex gap-4 p-4">
-        {/* Card Image */}
         <div className="flex-shrink-0">
           <img
             src={card.image}
@@ -56,8 +55,6 @@ function CardResult({ card }: { card: Card }) {
             className="rounded-lg object-cover"
           />
         </div>
-
-        {/* Card Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -66,14 +63,10 @@ function CardResult({ card }: { card: Card }) {
               <p className="text-xs text-gray-400 mt-0.5">{card.variant.replace(/_/g, ' ')} · {card.rarity}</p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-2xl font-bold text-green-600">
-                {formatGbp(card.bestPriceGbp)}
-              </p>
+              <p className="text-2xl font-bold text-green-600">{formatGbp(card.bestPriceGbp)}</p>
               <p className="text-xs text-gray-400">NM · TCGPlayer</p>
             </div>
           </div>
-
-          {/* Quick price row */}
           <div className="flex gap-3 mt-3 flex-wrap">
             {CONDITIONS.map(({ key, label }) => {
               const price = card.gbpPrices?.tcgplayer?.[key as keyof GbpPrices]
@@ -85,8 +78,6 @@ function CardResult({ card }: { card: Card }) {
               )
             })}
           </div>
-
-          {/* Expand button */}
           <button
             onClick={() => setExpanded(!expanded)}
             className="mt-3 text-xs text-blue-600 hover:text-blue-800"
@@ -95,8 +86,6 @@ function CardResult({ card }: { card: Card }) {
           </button>
         </div>
       </div>
-
-      {/* Expanded eBay prices */}
       {expanded && (
         <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
           <p className="text-xs font-semibold text-gray-500 mb-2">eBay sold prices</p>
@@ -116,29 +105,35 @@ function CardResult({ card }: { card: Card }) {
     </div>
   )
 }
-
-export default function PriceTrackerPage() {
+ 
+// Inner component that uses useSearchParams
+function PriceTrackerInner() {
+  const searchParams = useSearchParams()
   const [query, setQuery] = useState('')
   const [cards, setCards] = useState<Card[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [searched, setSearched] = useState(false)
   const [exchangeRate, setExchangeRate] = useState<number | null>(null)
-
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!query.trim()) return
-
+ 
+  // Auto-search if ?q= param is present (e.g. from nav search or homepage)
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q && q.trim()) {
+      setQuery(q)
+      runSearch(q)
+    }
+  }, [searchParams])
+ 
+  async function runSearch(searchQuery: string) {
+    if (!searchQuery.trim()) return
     setLoading(true)
     setError('')
     setSearched(true)
-
     try {
-      const res = await fetch(`/api/price?q=${encodeURIComponent(query)}`)
+      const res = await fetch(`/api/price?q=${encodeURIComponent(searchQuery)}`)
       const data = await res.json()
-
       if (!res.ok) throw new Error(data.error || 'Search failed')
-
       setCards(data.cards)
       setExchangeRate(data.exchangeRate)
     } catch (err: any) {
@@ -148,7 +143,12 @@ export default function PriceTrackerPage() {
       setLoading(false)
     }
   }
-
+ 
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    runSearch(query)
+  }
+ 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -161,8 +161,6 @@ export default function PriceTrackerPage() {
           <p className="text-gray-500 text-sm mt-1">
             Real market prices in GBP — converted from TCGPlayer & eBay sold data
           </p>
-
-          {/* Search */}
           <form onSubmit={handleSearch} className="mt-4 flex gap-2">
             <input
               type="text"
@@ -181,20 +179,17 @@ export default function PriceTrackerPage() {
           </form>
         </div>
       </div>
-
+ 
       {/* Results */}
       <div className="max-w-3xl mx-auto px-4 py-6">
-        {/* Disclaimer */}
         {exchangeRate && (
           <p className="text-xs text-gray-400 mb-4">
             Reference price — converted from US/EU market data · Rate: 1 USD = £{exchangeRate}
           </p>
         )}
-
         {error && (
           <div className="bg-red-50 text-red-600 rounded-lg p-4 text-sm">{error}</div>
         )}
-
         {loading && (
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
@@ -211,20 +206,17 @@ export default function PriceTrackerPage() {
             ))}
           </div>
         )}
-
         {!loading && searched && cards.length === 0 && !error && (
-          <p className="text-center text-gray-500 py-12">No cards found for "{query}"</p>
+          <p className="text-center text-gray-500 py-12">No cards found for &quot;{query}&quot;</p>
         )}
-
         {!loading && cards.length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500">{cards.length} results for "{query}"</p>
+            <p className="text-sm text-gray-500">{cards.length} results for &quot;{query}&quot;</p>
             {cards.map(card => (
               <CardResult key={card.id} card={card} />
             ))}
           </div>
         )}
-
         {!searched && (
           <div className="text-center py-16 text-gray-400">
             <p className="text-4xl mb-3">🔍</p>
@@ -233,5 +225,18 @@ export default function PriceTrackerPage() {
         )}
       </div>
     </div>
+  )
+}
+ 
+// Wrap in Suspense — required by Next.js for useSearchParams
+export default function PriceTrackerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Loading...</p>
+      </div>
+    }>
+      <PriceTrackerInner />
+    </Suspense>
   )
 }

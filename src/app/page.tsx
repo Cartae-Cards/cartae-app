@@ -2,20 +2,19 @@
 // src/app/page.tsx
 // Cartae — Homepage / Landing Page
 // Next.js 14 App Router | TypeScript | Tailwind CSS
-// Fonts loaded via next/font in layout.tsx — see note at bottom of this file
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from "next/link";
-
+import { useRouter } from 'next/navigation';
+ 
 // ─── DATA ────────────────────────────────────────────────────────────────────
-
+ 
 const stats = [
-  { value: "0%", label: "Seller listing fees" },
-  { value: "£GBP", label: "Native pricing" },
-  { value: "48hr", label: "Buyer protection escrow" },
-  { value: "AI", label: "Powered listing tools" },
+  { value: "£0", label: "Seller fees. Always." },
+  { value: "48hr", label: "Buyer protection" },
+  { value: "100%", label: "GBP native" },
 ];
-
+ 
 const features = [
   {
     icon: "💷",
@@ -48,7 +47,7 @@ const features = [
     desc: "PSA, BGS, and CGC graded cards are first-class citizens. Grade badges, grade-specific pricing, and graded filters throughout.",
   },
 ];
-
+ 
 const steps = [
   {
     num: "1",
@@ -66,297 +65,347 @@ const steps = [
     desc: "Buyer confirms delivery within 48 hours. Funds are released to the seller. Both parties leave a review.",
   },
 ];
-
+ 
+// Real card images from PokeTrace CDN — no API call needed
+const HERO_CARDS = [
+  {
+    image: "https://cdn.poketrace.com/cards/d64defcfc64ff4ea.webp",
+    name: "Charizard",
+    set: "Base Set · 004/102",
+    price: "£379.03",
+  },
+  {
+    image: "https://cdn.poketrace.com/cards/ec575a0a587733af.webp",
+    name: "Charizard",
+    set: "XY Evolutions · 11/108",
+    price: "£54.09",
+  },
+  {
+    image: "https://cdn.poketrace.com/cards/cfc6e6e5032ce72a.webp",
+    name: "Charizard",
+    set: "Plasma Storm · 136/135",
+    price: "£755.30",
+  },
+]
+ 
 // ─── PAGE ────────────────────────────────────────────────────────────────────
-
+ 
 export default function HomePage() {
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistMessage, setWaitlistMessage] = useState('')
   const [waitlistLoading, setWaitlistLoading] = useState(false)
-
+  const [navSearch, setNavSearch] = useState('')
+  const router = useRouter()
+ 
+  function handleNavSearch(e: React.FormEvent) {
+    e.preventDefault()
+    if (!navSearch.trim()) return
+    router.push(`/price-tracker?q=${encodeURIComponent(navSearch.trim())}`)
+  }
+ 
+  async function handleWaitlist() {
+    if (!waitlistEmail) return
+    setWaitlistLoading(true)
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail })
+      })
+      const data = await res.json()
+      setWaitlistMessage(data.message || data.error)
+      setWaitlistEmail('')
+    } catch {
+      setWaitlistMessage('Something went wrong, please try again.')
+    } finally {
+      setWaitlistLoading(false)
+    }
+  }
+ 
   return (
-    <div className="bg-[#faf8f4] text-[#0f1f3d] overflow-x-hidden">
-
+    <div className="bg-[#08172e] text-[#faf8f4] overflow-x-hidden">
+ 
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5%] py-5 bg-[#faf8f4]/90 backdrop-blur-md border-b border-[#e5e1d8]">
-        <span className="font-playfair text-2xl font-black tracking-tight">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5%] py-4 bg-[#08172e]/90 backdrop-blur-md border-b border-white/[0.06]">
+        <span className="font-playfair text-2xl font-black tracking-tight text-[#faf8f4]">
           Carta<span className="text-[#c9a84c]">e</span>
         </span>
         <ul className="hidden md:flex gap-8 list-none">
-          {["Features", "Price Tracker", "How It Works"].map((item) => (
-            <li key={item}>
-              <a
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-sm font-medium text-[#6b7280] hover:text-[#0f1f3d] transition-colors"
-              >
-                {item}
+          {[
+            { label: "Features", href: "#features" },
+            { label: "Price Tracker", href: "#price-tracker" },
+            { label: "How It Works", href: "#how-it-works" },
+          ].map((item) => (
+            <li key={item.label}>
+              <a href={item.href} className="text-sm font-medium text-white/50 hover:text-[#faf8f4] transition-colors">
+                {item.label}
               </a>
             </li>
           ))}
         </ul>
-        <Link
-          href="#early-access"
-          className="bg-[#0f1f3d] text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-[#1a3260] transition-colors"
-        >
-          Get Early Access
-        </Link>
+        {/* Nav search — redirects to price tracker */}
+        <form onSubmit={handleNavSearch} className="flex items-center">
+          <div className="relative flex items-center">
+            <svg className="absolute left-3 w-3.5 h-3.5 text-white/30 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              type="text"
+              value={navSearch}
+              onChange={(e) => setNavSearch(e.target.value)}
+              placeholder="Search card prices..."
+              className="bg-white/[0.08] border border-white/[0.18] rounded-lg pl-9 pr-4 py-2 text-sm text-[#faf8f4] placeholder-white/35 focus:outline-none focus:border-[#c9a84c]/60 transition-colors w-52"
+            />
+          </div>
+        </form>
       </nav>
-
+ 
       {/* ── HERO ── */}
       <section className="min-h-screen flex items-center pt-32 pb-20 px-[5%] relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 right-[25%] -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#c9a84c]/[0.06] blur-3xl" />
-        </div>
-
+        <div className="absolute top-1/2 right-[20%] -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#c9a84c]/[0.05] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-[5%] w-[400px] h-[400px] rounded-full bg-[#1a3260]/30 blur-3xl pointer-events-none" />
+ 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto w-full">
-          <div className="flex flex-col animate-fade-up">
-            <span className="inline-flex items-center gap-2 self-start bg-[#c9a84c]/10 border border-[#c9a84c]/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#8a6a1a] uppercase tracking-widest mb-6">
-              🇬🇧 UK-First Marketplace — Coming Soon
+ 
+          {/* Left */}
+          <div className="flex flex-col">
+            <span className="inline-flex items-center gap-2 self-start bg-[#c9a84c]/10 border border-[#c9a84c]/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#c9a84c] uppercase tracking-widest mb-6">
+              🇬🇧 UK-First Marketplace · Coming Soon
             </span>
-
-            <h1 className="font-playfair text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-6">
-              Buy &amp; sell cards{" "}
-              <br />
-              the{" "}
-              <em className="not-italic text-[#c9a84c]">right</em> way.
-              <br />
-              In pounds.
+ 
+            <h1 className="font-playfair text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-5">
+              The collector&apos;s<br />
+              marketplace,<br />
+              <em className="not-italic text-[#c9a84c]">built for Britain.</em>
             </h1>
-
-            <p className="text-lg text-[#6b7280] leading-relaxed mb-10 max-w-lg">
-              Cartae is the UK's dedicated trading card marketplace — GBP-native
-              pricing, zero seller fees, AI-powered listings, and built-in buyer
-              protection.
+ 
+            <div className="w-12 h-0.5 bg-[#c9a84c] mb-6" />
+ 
+            <p className="text-base text-white/55 leading-relaxed mb-8 max-w-lg">
+              GBP-native pricing, zero seller fees, AI-powered listings, and 48-hour
+              buyer protection escrow — all in one marketplace made exclusively for UK collectors.
             </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="#early-access"
-                className="inline-flex items-center gap-2 bg-[#0f1f3d] text-white font-medium text-base px-8 py-3.5 rounded-lg hover:bg-[#1a3260] hover:-translate-y-0.5 transition-all"
-              >
-                Get Early Access →
-              </Link>
-              <Link
-                href="/price-tracker"
-                className="inline-flex items-center gap-2 bg-transparent text-[#0f1f3d] font-medium text-base px-8 py-3.5 rounded-lg border-2 border-[#0f1f3d] hover:bg-[#0f1f3d] hover:text-white transition-all"
-              >
-                Try Price Tracker
-              </Link>
+ 
+            {/* Inline waitlist */}
+            <div id="early-access" className="flex flex-col gap-3 max-w-md">
+              <div className="flex gap-3">
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={waitlistEmail}
+                  onChange={(e) => setWaitlistEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleWaitlist()}
+                  className="flex-1 bg-white/[0.07] border border-white/[0.18] rounded-lg px-4 py-3 text-sm text-[#faf8f4] placeholder-white/30 focus:outline-none focus:border-[#c9a84c]/60 transition-colors"
+                />
+                <button
+                  onClick={handleWaitlist}
+                  disabled={waitlistLoading}
+                  className="bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-6 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  {waitlistLoading ? 'Joining...' : 'Get Early Access'}
+                </button>
+              </div>
+              {waitlistMessage ? (
+                <p className="text-sm text-[#c9a84c]">{waitlistMessage}</p>
+              ) : (
+                <div className="flex items-center gap-3 text-xs text-white/30">
+                  <span>· 0% seller fees</span>
+                  <span>· GBP pricing</span>
+                  <span>· 48hr escrow</span>
+                  <span>· AI listings</span>
+                </div>
+              )}
             </div>
           </div>
-
+ 
+          {/* Right: real card stack */}
           <div className="relative h-[460px] flex items-center justify-center">
-            <div className="relative w-[240px] h-[340px] animate-float">
-              <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-gradient-to-br from-[#1a3260] to-[#0f1f3d] border border-white/10 shadow-2xl rotate-[-8deg] translate-x-[-30px] translate-y-[10px] z-[1]" />
-              <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-gradient-to-br from-[#2a4a8a] to-[#1a3260] border border-white/10 shadow-2xl rotate-[-3deg] translate-x-[-10px] translate-y-[5px] z-[2]" />
-              <div className="absolute w-[220px] h-[310px] rounded-[14px] bg-white border border-[#e5e1d8] shadow-2xl rotate-[2deg] z-[3] p-4 flex flex-col">
-                <div className="w-full h-[170px] rounded-lg bg-gradient-to-br from-[#e8f0fe] to-[#c7d8f8] flex items-center justify-center text-5xl mb-3">
-                  ⚡
-                </div>
-                <p className="font-playfair font-bold text-base text-[#0f1f3d] mb-0.5">
-                  Pikachu ex
-                </p>
-                <p className="text-xs text-[#6b7280] mb-3">
-                  Scarlet &amp; Violet 151
-                </p>
-                <div className="flex gap-1.5 flex-wrap mb-3">
-                  <span className="bg-blue-100 text-blue-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">EN</span>
-                  <span className="bg-green-100 text-green-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">NM</span>
-                  <span className="bg-amber-100 text-amber-800 text-[0.65rem] font-semibold px-2 py-0.5 rounded">PSA 10</span>
-                </div>
-                <div className="mt-auto">
-                  <p className="font-playfair font-bold text-xl text-[#0f1f3d]">£124.99</p>
-                  <p className="text-[0.65rem] text-[#6b7280]">+ buyer protection included</p>
+            <div className="relative w-[240px] h-[336px]">
+              {/* Back card */}
+              <div className="absolute w-[220px] h-[308px] rounded-[14px] overflow-hidden shadow-2xl border border-white/10"
+                style={{ transform: 'rotate(-8deg) translate(-30px, 10px)', zIndex: 1 }}>
+                <img src={HERO_CARDS[0].image} alt={HERO_CARDS[0].name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-[#08172e]/50" />
+              </div>
+              {/* Mid card */}
+              <div className="absolute w-[220px] h-[308px] rounded-[14px] overflow-hidden shadow-2xl border border-white/10"
+                style={{ transform: 'rotate(-3deg) translate(-10px, 5px)', zIndex: 2 }}>
+                <img src={HERO_CARDS[1].image} alt={HERO_CARDS[1].name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-[#08172e]/25" />
+              </div>
+              {/* Front card */}
+              <div className="absolute w-[220px] rounded-[14px] overflow-hidden shadow-2xl border border-white/15 bg-[#0f1f3d]"
+                style={{ transform: 'rotate(2deg)', zIndex: 3 }}>
+                <img src={HERO_CARDS[2].image} alt={HERO_CARDS[2].name} className="w-full h-[200px] object-cover" />
+                <div className="p-3">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <p className="font-playfair font-bold text-sm text-[#faf8f4]">{HERO_CARDS[2].name}</p>
+                    <span className="bg-amber-500/20 text-amber-300 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded">PSA 10</span>
+                  </div>
+                  <p className="text-[0.65rem] text-white/40 mb-2">{HERO_CARDS[2].set}</p>
+                  <div className="flex gap-1.5 mb-3">
+                    <span className="bg-blue-500/20 text-blue-300 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded">EN</span>
+                    <span className="bg-green-500/20 text-green-300 text-[0.6rem] font-semibold px-1.5 py-0.5 rounded">NM</span>
+                  </div>
+                  <p className="font-playfair font-bold text-lg text-[#faf8f4]">{HERO_CARDS[2].price}</p>
+                  <p className="text-[0.6rem] text-white/30">+ buyer protection included</p>
                 </div>
               </div>
             </div>
-
-            <div className="absolute top-5 right-0 md:-right-5 bg-white border border-[#e5e1d8] rounded-xl px-3.5 py-2.5 shadow-lg flex items-center gap-2 text-xs font-medium whitespace-nowrap z-10">
-              <span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />
-              AI-filled in 3 seconds
+ 
+            {/* Floating badges */}
+            <div className="absolute top-6 right-0 bg-[#0f1f3d] border border-white/10 rounded-xl px-3 py-2 shadow-xl z-10">
+              <p className="text-white/35 text-[0.6rem] uppercase tracking-wider mb-0.5">GBP Price</p>
+              <p className="font-playfair font-bold text-[#c9a84c] text-lg">{HERO_CARDS[2].price}</p>
             </div>
-            <div className="absolute bottom-10 left-0 md:-left-10 bg-white border border-[#e5e1d8] rounded-xl px-3.5 py-2.5 shadow-lg flex items-center gap-2 text-xs font-medium whitespace-nowrap z-10">
-              <span className="w-2 h-2 rounded-full bg-[#c9a84c] flex-shrink-0" />
-              0% seller listing fee
+            <div className="absolute bottom-16 left-0 bg-[#0f1f3d] border border-white/10 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2 z-10">
+              <span className="w-6 h-6 rounded-full bg-[#c9a84c]/15 flex items-center justify-center text-sm">🛡</span>
+              <div>
+                <p className="text-[#faf8f4] font-medium text-[0.7rem]">48hr Protection</p>
+                <p className="text-white/35 text-[0.6rem]">Buyer escrow active</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
+ 
       {/* ── STATS BAR ── */}
-      <div className="bg-[#0f1f3d] px-[5%] py-8 flex justify-center">
-        <div className="flex flex-wrap max-w-4xl w-full border border-white/10 rounded-xl overflow-hidden">
+      <div className="bg-[#0a1628] border-y border-white/[0.06] px-[5%] py-8 flex justify-center">
+        <div className="flex flex-wrap max-w-2xl w-full">
           {stats.map((stat, i) => (
-            <div
-              key={stat.label}
-              className={`flex-1 min-w-[140px] py-6 px-8 text-center ${i < stats.length - 1 ? "border-r border-white/10" : ""}`}
-            >
-              <span className="font-playfair text-3xl font-bold text-[#e8c97a] block mb-1">{stat.value}</span>
-              <span className="text-xs text-white/50 font-light">{stat.label}</span>
+            <div key={stat.label}
+              className={`flex-1 min-w-[120px] py-4 px-6 text-center ${i < stats.length - 1 ? "border-r border-white/[0.06]" : ""}`}>
+              <span className="font-playfair text-3xl font-bold text-[#c9a84c] block mb-1">{stat.value}</span>
+              <span className="text-xs text-white/35">{stat.label}</span>
             </div>
           ))}
         </div>
       </div>
-
+ 
       {/* ── FEATURES ── */}
       <section id="features" className="py-24 px-[5%] max-w-6xl mx-auto">
         <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Why Cartae</span>
-        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
+        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 text-[#faf8f4]">
           Built for UK collectors.<br />Not an afterthought.
         </h2>
-        <p className="text-[#6b7280] text-base leading-relaxed max-w-xl mb-14">
+        <p className="text-white/45 text-base leading-relaxed max-w-xl mb-14">
           TCGPlayer is built for the US. Cardmarket is built for Europe. Cartae is built for you — GBP, Royal Mail, and the UK Pokémon community first.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <div key={f.title} className="bg-white border border-[#e5e1d8] rounded-2xl p-8 hover:-translate-y-1 hover:shadow-xl transition-all duration-200">
-              <div className="w-11 h-11 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center text-xl mb-5">{f.icon}</div>
-              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">{f.title}</h3>
-              <p className="text-sm text-[#6b7280] leading-relaxed">{f.desc}</p>
+            <div key={f.title} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 hover:-translate-y-1 hover:border-[#c9a84c]/30 transition-all duration-200">
+              <div className="w-10 h-10 rounded-xl bg-[#c9a84c]/10 flex items-center justify-center text-xl mb-5">{f.icon}</div>
+              <h3 className="font-playfair font-bold text-base text-[#faf8f4] mb-2">{f.title}</h3>
+              <p className="text-sm text-white/45 leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
-
+ 
       {/* ── PRICE TRACKER ── */}
-      <section id="price-tracker" className="bg-[#0f1f3d] py-24 px-[5%] relative overflow-hidden">
-        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-[#c9a84c]/10 blur-3xl pointer-events-none" />
+      <section id="price-tracker" className="bg-[#0a1628] border-y border-white/[0.06] py-24 px-[5%] relative overflow-hidden">
+        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-[#c9a84c]/[0.06] blur-3xl pointer-events-none" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto relative">
           <div>
             <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Free Tool</span>
-            <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight text-white tracking-tight mb-4">
+            <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight text-[#faf8f4] tracking-tight mb-4">
               Track GBP card<br />prices. Before<br />you even sign up.
             </h2>
-            <p className="text-white/55 text-base leading-relaxed mb-6">
-              The Cartae Price Tracker launches before the marketplace. Check live GBP prices, 30-day trends, and PSA grade values for any Pokémon card — completely free, no account needed.
+            <p className="text-white/45 text-base leading-relaxed mb-6">
+              The Cartae Price Tracker launches before the marketplace. Check live GBP prices across all conditions for any Pokémon card — completely free, no account needed.
             </p>
-            <span className="inline-block bg-[#c9a84c]/15 border border-[#c9a84c]/30 text-[#e8c97a] text-xs font-medium px-4 py-1.5 rounded-full mb-8">
+            <span className="inline-block bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c] text-xs font-medium px-4 py-1.5 rounded-full mb-8">
               Launching first · No login required
             </span>
             <br />
-            <Link href="#early-access" className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors">
-              Get notified when it&apos;s live →
+            <Link href="/price-tracker" className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors">
+              Try the Price Tracker →
             </Link>
           </div>
-
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+ 
+          {/* Real card demo — hardcoded, zero API calls */}
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6">
             <div className="flex gap-2 mb-5">
-              <input type="text" defaultValue="Charizard ex" readOnly className="flex-1 bg-white/[0.08] border border-white/15 rounded-lg px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none" />
-              <button className="bg-[#c9a84c] text-[#0f1f3d] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e8c97a] transition-colors">Search</button>
+              <input type="text" defaultValue="Charizard" readOnly
+                className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-lg px-4 py-2.5 text-[#faf8f4] text-sm focus:outline-none cursor-default" />
+              <Link href="/price-tracker?q=Charizard"
+                className="bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-[#e8c97a] transition-colors">
+                Search
+              </Link>
             </div>
-            <div className="flex gap-2 mb-4">
-              {["EN", "JP", "KR"].map((lang, i) => (
-                <button key={lang} className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${i === 0 ? "bg-white/10 text-white border-white/20" : "bg-transparent text-white/50 border-white/10 hover:text-white/70"}`}>{lang}</button>
-              ))}
-            </div>
-            <div className="bg-white/5 border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
-              <div className="w-12 h-[68px] rounded-lg bg-gradient-to-br from-[#3a5fa0] to-[#1a3260] flex items-center justify-center text-2xl flex-shrink-0">🔥</div>
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
+              <img src={HERO_CARDS[0].image} alt="Charizard Base Set"
+                className="w-14 h-[78px] rounded-lg object-cover flex-shrink-0 border border-white/10" />
               <div className="flex-1 min-w-0">
-                <p className="font-playfair font-bold text-sm text-white mb-0.5 truncate">Charizard ex — Special Illustration Rare</p>
-                <p className="text-[0.7rem] text-white/40 mb-3">Obsidian Flames · SV03 · #234</p>
+                <p className="font-playfair font-bold text-sm text-[#faf8f4] mb-0.5">Charizard — Holo Rare</p>
+                <p className="text-[0.7rem] text-white/35 mb-3">Base Set · 004/102</p>
                 <div className="flex gap-4">
-                  <div className="text-center">
-                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">£89.99</span>
-                    <span className="text-[0.65rem] text-white/35">Raw NM</span>
+                  <div>
+                    <span className="font-playfair font-bold text-base text-[#c9a84c] block">£379.03</span>
+                    <span className="text-[0.65rem] text-white/35">NM · TCGPlayer</span>
                   </div>
-                  <div className="text-center">
-                    <span className="font-playfair font-bold text-base text-[#e8c97a] block">£310.00</span>
-                    <span className="text-[0.65rem] text-white/35">PSA 10</span>
+                  <div>
+                    <span className="font-playfair font-bold text-base text-[#c9a84c] block">£547.59</span>
+                    <span className="text-[0.65rem] text-white/35">NM · eBay sold</span>
                   </div>
-                  <div className="text-center">
-                    <span className="font-bold text-base text-green-400 block">↑ 12%</span>
+                  <div>
+                    <span className="font-bold text-base text-green-400 block">↑ 8%</span>
                     <span className="text-[0.65rem] text-white/35">30-day trend</span>
                   </div>
                 </div>
               </div>
             </div>
+            <p className="text-[0.65rem] text-white/25 mt-3 text-center">Reference price · converted from US/EU market data</p>
           </div>
         </div>
       </section>
-
+ 
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="py-24 px-[5%] max-w-6xl mx-auto text-center">
         <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Simple Process</span>
-        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">How Cartae works</h2>
-        <p className="text-[#6b7280] text-base leading-relaxed max-w-md mx-auto mb-14">
-          Buying and selling should be simple. Here's how a transaction works on Cartae.
+        <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4 text-[#faf8f4]">How Cartae works</h2>
+        <p className="text-white/45 text-base leading-relaxed max-w-md mx-auto mb-14">
+          Buying and selling should be simple. Here&apos;s how a transaction works on Cartae.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          <div className="hidden md:block absolute top-8 left-[17%] right-[17%] h-px bg-[#e5e1d8]" />
+          <div className="hidden md:block absolute top-7 left-[17%] right-[17%] h-px bg-white/[0.08]" />
           {steps.map((step) => (
             <div key={step.num} className="px-4">
-              <div className="w-16 h-16 rounded-full bg-[#0f1f3d] text-white font-playfair text-2xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">{step.num}</div>
-              <h3 className="font-playfair font-bold text-lg text-[#0f1f3d] mb-2">{step.title}</h3>
-              <p className="text-sm text-[#6b7280] leading-relaxed">{step.desc}</p>
+              <div className="w-14 h-14 rounded-full bg-[#c9a84c]/10 border border-[#c9a84c]/30 text-[#c9a84c] font-playfair text-xl font-bold flex items-center justify-center mx-auto mb-5 relative z-10">
+                {step.num}
+              </div>
+              <h3 className="font-playfair font-bold text-base text-[#faf8f4] mb-2">{step.title}</h3>
+              <p className="text-sm text-white/45 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
-
-      {/* ── EARLY ACCESS ── */}
-      <section id="early-access" className="py-24 px-[5%] text-center bg-[#faf8f4]">
-        <div className="max-w-lg mx-auto">
-          <span className="text-xs font-semibold tracking-[0.1em] uppercase text-[#c9a84c] block mb-3">Join the waitlist</span>
-          <h2 className="font-playfair text-4xl lg:text-5xl font-black leading-tight tracking-tight mb-4">
-            Be first when<br />Cartae launches
-          </h2>
-          <p className="text-[#6b7280] text-base leading-relaxed mb-8">
-            We&apos;re soft-launching in 6–8 weeks. Sign up to get early access, be notified when the Price Tracker goes live, and help shape the platform.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              value={waitlistEmail}
-              onChange={(e) => setWaitlistEmail(e.target.value)}
-              className="flex-1 border-[1.5px] border-[#e5e1d8] rounded-lg px-4 py-3 text-sm text-[#0f1f3d] bg-white outline-none focus:border-[#0f1f3d] transition-colors"
-            />
-            <button
-              onClick={async () => {
-                if (!waitlistEmail) return
-                setWaitlistLoading(true)
-                try {
-                  const res = await fetch('/api/waitlist', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: waitlistEmail })
-                  })
-                  const data = await res.json()
-                  setWaitlistMessage(data.message || data.error)
-                  setWaitlistEmail('')
-                } catch {
-                  setWaitlistMessage('Something went wrong, please try again.')
-                } finally {
-                  setWaitlistLoading(false)
-                }
-              }}
-              disabled={waitlistLoading}
-              className="bg-[#0f1f3d] text-white font-medium text-sm px-6 py-3 rounded-lg hover:bg-[#1a3a5c] transition-colors disabled:opacity-50"
-            >
-              {waitlistLoading ? 'Joining...' : 'Notify me →'}
-            </button>
-          </div>
-          {waitlistMessage && (
-            <p className="text-sm text-center text-[#0f1f3d] mt-2">{waitlistMessage}</p>
-          )}
-          <p className="text-xs text-[#6b7280]">No spam. Just a single email when we launch. Unsubscribe any time.</p>
-        </div>
-      </section>
-
+ 
+      {/* ── SCROLL CTA ── */}
+      <div className="py-16 px-[5%] text-center bg-[#0a1628] border-t border-white/[0.06]">
+        <p className="text-white/40 text-sm mb-4">Want to be first when we launch?</p>
+        <button
+          onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          className="inline-flex items-center gap-2 bg-[#c9a84c] text-[#08172e] font-semibold text-sm px-7 py-3 rounded-lg hover:bg-[#e8c97a] transition-colors"
+        >
+          Get Early Access ↑
+        </button>
+      </div>
+ 
       {/* ── FOOTER ── */}
-      <footer className="bg-[#0f1f3d] px-[5%] py-10 flex flex-wrap justify-between items-center gap-4">
-        <span className="font-playfair text-xl font-black text-white">Carta<span className="text-[#c9a84c]">e</span></span>
+      <footer className="bg-[#060f1e] px-[5%] py-10 flex flex-wrap justify-between items-center gap-4 border-t border-white/[0.06]">
+        <span className="font-playfair text-xl font-black text-[#faf8f4]">
+          Carta<span className="text-[#c9a84c]">e</span>
+        </span>
         <ul className="flex gap-6 list-none">
-          {["About", "Price Tracker", "Contact", "Privacy"].map((item) => (
-            <li key={item}>
-              <Link href="#" className="text-xs text-white/40 hover:text-white/70 transition-colors">{item}</Link>
-            </li>
-          ))}
+          <li><button onClick={() => document.getElementById('early-access')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="text-xs text-white/35 hover:text-white/70 transition-colors">Join Waitlist</button></li>
+          <li><a href="#price-tracker" className="text-xs text-white/35 hover:text-white/70 transition-colors">Price Tracker</a></li>
+          <li><a href="#features" className="text-xs text-white/35 hover:text-white/70 transition-colors">Features</a></li>
+          <li><Link href="/privacy" className="text-xs text-white/35 hover:text-white/70 transition-colors">Privacy Policy</Link></li>
         </ul>
-        <span className="text-xs text-white/30">© 2026 Cartae · cartae.co.uk · Built in the UK 🇬🇧</span>
+        <span className="text-xs text-white/25">© 2026 Cartae · cartae.co.uk · Built in the UK 🇬🇧</span>
       </footer>
-
+ 
     </div>
   );
 }
