@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server'
- 
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')
   const set = searchParams.get('set')
- 
+
   // Need at least a name or a set
   if (!query && !set) {
     return NextResponse.json({ error: 'Provide a card name or set' }, { status: 400 })
   }
- 
+
   try {
     // Build PokeTrace URL with optional name + set params
     const params = new URLSearchParams({ limit: '10' })
     if (query) params.set('search', query)
     if (set) params.set('set', set)
- 
+
     const [cardsResponse, fxResponse] = await Promise.all([
       fetch(
         `https://api.poketrace.com/v1/cards?${params.toString()}`,
@@ -29,19 +29,30 @@ export async function GET(request: Request) {
         { next: { revalidate: 86400 } }
       )
     ])
- 
+
     if (!cardsResponse.ok) throw new Error(`PokeTrace error: ${cardsResponse.status}`)
     if (!fxResponse.ok) throw new Error(`FX error: ${fxResponse.status}`)
- 
+
+    // Log PokeTrace rate limit headers
+    const ptRemaining = cardsResponse.headers.get('X-RateLimit-Remaining')
+    const ptLimit = cardsResponse.headers.get('X-RateLimit-Limit')
+    const ptReset = cardsResponse.headers.get('X-RateLimit-Reset')
+    if (ptRemaining !== null) {
+      console.log(`[PokeTrace] Remaining: ${ptRemaining}/${ptLimit ?? '?'}${ptReset ? ` — resets at ${ptReset}` : ''}`)
+    }
+
     const cardsData = await cardsResponse.json()
     const fxData = await fxResponse.json()
     const usdToGbp = fxData.conversion_rate
 
+    // Log Exchange Rate API quota from response body
+    if (fxData.requests_remaining !== undefined) {
+      console.log(`[ExchangeRate] Remaining: ${fxData.requests_remaining}${fxData.refresh_day_of_month ? ` — resets on day ${fxData.refresh_day_of_month} of each month` : ''}`)
+    }
 
- 
     const cards = cardsData.data.map((card: any) => {
       const gbpPrices: Record<string, Record<string, number | null>> = {}
- 
+
       for (const source of ['tcgplayer', 'ebay']) {
         const sourcePrices = card.prices?.[source]
         if (!sourcePrices) continue
@@ -51,12 +62,12 @@ export async function GET(request: Request) {
           gbpPrices[source][condition] = avg ? parseFloat((avg * usdToGbp).toFixed(2)) : null
         }
       }
- 
+
       const bestPriceUsd =
         card.prices?.tcgplayer?.NEAR_MINT?.avg ??
         card.prices?.ebay?.NEAR_MINT?.avg ??
         null
- 
+
       const totalSales =
         (card.prices?.tcgplayer?.NEAR_MINT?.saleCount ?? 0) +
         (card.prices?.ebay?.NEAR_MINT?.saleCount ?? 0) +
@@ -78,14 +89,14 @@ export async function GET(request: Request) {
         lastUpdated: card.lastUpdated,
       }
     })
- 
+
     return NextResponse.json({
       cards,
       exchangeRate: usdToGbp,
       disclaimer: 'Reference price — converted from US/EU market data',
       count: cards.length,
     })
- 
+
   } catch (error) {
     console.error('Price route error:', error)
     return NextResponse.json({ error: 'Failed to fetch prices' }, { status: 500 })
