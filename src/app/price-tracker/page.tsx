@@ -337,7 +337,7 @@ function PriceTrackerInner() {
       if (setSlug) params.set('set', setSlug)
       const res = await fetch(`/api/price?${params.toString()}`)
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Search failed')
+      if (!res.ok) throw new Error(data.error || (res.status === 429 ? 'Rate limit reached — please wait a moment and try again.' : 'Search failed'))
       setCards(data.cards)
       setExchangeRate(data.exchangeRate)
       const label = nameQuery && setSlug
